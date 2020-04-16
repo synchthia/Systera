@@ -1,0 +1,15 @@
+player:
+  error:
+    local_profile: "&cLocal profile error. Please re-login."
+
+  settings:
+    error:
+      not_found: "&cSettings not found: {0}"
+      sync_failed: "&cFailed sync settings. Please see console."
+
+    header: |
+      &8&l[&b&lSettings&8&l]&m-----------------------------------
+      &eUsage: /settings <name> <on/off>
+
+    entry: "&6{0}: {1}"
+    footer: "&8&l&m----------------------------------------------"
