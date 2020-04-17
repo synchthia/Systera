@@ -5,6 +5,7 @@ import co.aikar.commands.CommandIssuer;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
+import net.synchthia.systera.chat.ChatListener;
 import net.synchthia.systera.commands.APICommand;
 import net.synchthia.systera.commands.SettingsCommand;
 import net.synchthia.systera.i18n.I18n;
@@ -84,6 +85,7 @@ public class SysteraPlugin extends JavaPlugin {
     private void registerEvents() {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new PlayerListener(this), this);
+        pm.registerEvents(new ChatListener(this), this);
     }
 
     private void registerCommands() {
