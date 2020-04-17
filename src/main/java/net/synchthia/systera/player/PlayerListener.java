@@ -60,6 +60,7 @@ public class PlayerListener implements Listener {
         }
 
         plugin.getPlayerStore().add(player.getUniqueId(), pd);
+        pd.applyPermissionsByGroup();
     }
 
     @EventHandler

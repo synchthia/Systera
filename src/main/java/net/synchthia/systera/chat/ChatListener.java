@@ -24,7 +24,7 @@ public class ChatListener implements Listener {
         Player player = event.getPlayer();
         SysteraPlayer systeraPlayer = plugin.getPlayerStore().get(player.getUniqueId());
 
-        String format = String.format("&7%s&a:&r ", player.getDisplayName());
+        String format = String.format("%s&7%s&a:&r ", systeraPlayer.getPrefix(), player.getDisplayName());
         String japanizeMsg = "";
         if (systeraPlayer.getSettings().getJapanize().getValue()) {
             String converted = japanize.convert(event.getMessage());

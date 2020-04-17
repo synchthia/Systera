@@ -1,22 +1,24 @@
 package net.synchthia.systera;
 
 import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.CommandIssuer;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import net.synchthia.systera.chat.ChatListener;
 import net.synchthia.systera.commands.APICommand;
 import net.synchthia.systera.commands.SettingsCommand;
+import net.synchthia.systera.group.GroupStore;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.i18n.I18nManager;
 import net.synchthia.systera.player.PlayerListener;
 import net.synchthia.systera.player.PlayerStore;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 public class SysteraPlugin extends JavaPlugin {
@@ -44,6 +46,8 @@ public class SysteraPlugin extends JavaPlugin {
     // Store
     @Getter
     private PlayerStore playerStore;
+    @Getter
+    private GroupStore groupStore;
 
     // Commands
     private BukkitCommandManager cmdManager;
@@ -60,6 +64,7 @@ public class SysteraPlugin extends JavaPlugin {
             I18n.setI18nManager(new I18nManager(this));
 
             this.playerStore = new PlayerStore(this);
+            this.groupStore = new GroupStore(this);
 
             registerAPI();
             registerEvents();
@@ -71,15 +76,15 @@ public class SysteraPlugin extends JavaPlugin {
             this.started = true;
         } catch (Exception e) {
             this.getLogger().log(Level.SEVERE, "Exception threw while onEnable: ", e);
+            this.getServer().shutdown();
         }
     }
 
-    private void registerAPI() {
+    private void registerAPI() throws InterruptedException, ExecutionException, TimeoutException {
         this.getLogger().log(Level.INFO, "API Address: " + apiAddress);
 
         this.apiClient = new APIClient(apiAddress);
-
-        // TODO: FetchPlayerProfile (or Init?)
+        this.groupStore.fetch().get(5, TimeUnit.SECONDS);
     }
 
     private void registerEvents() {

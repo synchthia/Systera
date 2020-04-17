@@ -1,14 +1,15 @@
 package net.synchthia.systera.player;
 
-import com.google.protobuf.ProtocolStringList;
 import lombok.Data;
-import lombok.NonNull;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.group.Group;
 import net.synchthia.systera.settings.Settings;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
@@ -19,12 +20,16 @@ public class SysteraPlayer {
     private final Player player;
     private UUID uuid;
     private String name;
-    private ProtocolStringList groups;
+    private List<String> groups;
     private Settings settings;
+
+    // Group
+    private PermissionAttachment attachment;
 
     public SysteraPlayer(SysteraPlugin plugin, Player player) {
         this.plugin = plugin;
         this.player = player;
+        this.attachment = player.addAttachment(this.plugin);
     }
 
     public CompletableFuture<SysteraProtos.InitPlayerProfileResponse> init(String address, String hostname) {
@@ -50,10 +55,65 @@ public class SysteraPlayer {
         });
     }
 
+    // TODO: to static method?
     private void fromProto(SysteraProtos.PlayerEntry entry) {
         this.uuid = APIClient.toUUID(entry.getUuid());
         this.name = entry.getName();
         this.groups = entry.getGroupsList();
         this.settings = new Settings(this.player, entry.getSettings());
+    }
+
+    public String getPrefix() {
+        Group group;
+        if (groups.size() >= 2) {
+            group = plugin.getGroupStore().get(groups.get(1));
+        } else {
+            group = plugin.getGroupStore().get(groups.get(0));
+        }
+
+        if (group != null) {
+            return group.getPrefix();
+        } else {
+            return "";
+        }
+    }
+
+    public void applyPermissionsByGroup() {
+        refreshAttachment();
+
+        player.setPlayerListName(getPrefix() + player.getName());
+
+        this.groups.forEach(groupName -> {
+            Group group = plugin.getGroupStore().get(groupName);
+            if (group != null) {
+                applyPermissions(group.getGlobalPerms());
+                applyPermissions(group.getServerPerms());
+            }
+        });
+    }
+
+    private void refreshAttachment() {
+        if (this.attachment != null) {
+            player.removeAttachment(this.attachment);
+            this.attachment = player.addAttachment(this.plugin);
+        }
+    }
+
+    public void applyPermissions(List<String> permissions) {
+        permissions.forEach(perm -> {
+            if (perm.startsWith("-")) {
+                attachment.setPermission(perm.replaceFirst("-", ""), false);
+            } else {
+                attachment.setPermission(perm, true);
+            }
+        });
+
+        player.recalculatePermissions();
+
+        if (player.hasPermission("systera.op")) {
+            player.setOp(true);
+        } else {
+            player.setOp(false);
+        }
     }
 }
