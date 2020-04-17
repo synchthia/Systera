@@ -2,6 +2,7 @@ package net.synchthia.systera.player;
 
 import net.synchthia.systera.SysteraPlugin;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,5 +29,9 @@ public class PlayerStore {
 
     public int size() {
         return this.players.size();
+    }
+
+    public Collection<SysteraPlayer> list() {
+        return this.players.values();
     }
 }

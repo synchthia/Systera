@@ -2,6 +2,7 @@ package net.synchthia.systera.player;
 
 import com.google.protobuf.ProtocolStringList;
 import lombok.Data;
+import lombok.NonNull;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;

@@ -1,11 +1,13 @@
 package net.synchthia.systera.settings;
 
+import lombok.Data;
 import net.synchthia.api.systera.SysteraProtos;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Data
 public class Settings {
     private final Player player;
 

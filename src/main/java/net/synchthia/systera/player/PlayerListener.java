@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -62,8 +63,44 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        event.setJoinMessage(null);
+
+        // Vanish
+        if (!player.hasPermission("systera.vanish")) {
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getVanish().getValue()).forEach(sp -> {
+                if (player.getPlayer() != null) {
+                    player.getPlayer().hidePlayer(plugin, sp.getPlayer());
+                }
+            });
+        }
+
+        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        if (sp.getSettings().getVanish().getValue()) {
+            plugin.getServer().getOnlinePlayers().stream()
+                    .filter(p -> !p.hasPermission("systera.vanish"))
+                    .forEach(p -> p.hidePlayer(plugin, player));
+        } else {
+            plugin.getPlayerStore().list().stream()
+                    .filter(p -> p.getSettings().getJoinMessage().getValue())
+                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
+        }
+    }
+
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+
+        event.setQuitMessage(null);
+
+        if (!plugin.getPlayerStore().get(player.getUniqueId()).getSettings().getVanish().getValue()) {
+            plugin.getPlayerStore().list().stream()
+                    .filter(p -> p.getSettings().getJoinMessage().getValue())
+                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Quit> " + player.getName()));
+        }
+
         plugin.getPlayerStore().remove(player.getUniqueId());
     }
 }

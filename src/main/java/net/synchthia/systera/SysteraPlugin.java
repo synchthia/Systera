@@ -1,6 +1,7 @@
 package net.synchthia.systera;
 
 import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.CommandIssuer;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
@@ -103,8 +104,11 @@ public class SysteraPlugin extends JavaPlugin {
         ));
 
         cmdManager.getCommandCompletions().registerCompletion("player_settings", c -> {
-            Player player = c.getPlayer();
-            return ImmutableList.copyOf(playerStore.get(player.getUniqueId()).getSettings().getSettings().keySet());
+            if (c.getSender() instanceof Player) {
+                Player player = c.getPlayer();
+                return ImmutableList.copyOf(playerStore.get(player.getUniqueId()).getSettings().getSettings().keySet());
+            }
+            return ImmutableList.of();
         });
 
         this.cmdManager.registerCommand(new APICommand(this));
