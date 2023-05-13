@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.synchthia.systera.chat.ChatListener;
 import net.synchthia.systera.commands.APICommand;
+import net.synchthia.systera.commands.AnnounceCommand;
 import net.synchthia.systera.commands.SettingsCommand;
 import net.synchthia.systera.group.GroupStore;
 import net.synchthia.systera.i18n.I18n;
@@ -118,6 +119,7 @@ public class SysteraPlugin extends JavaPlugin {
             return ImmutableList.of();
         });
 
+        this.cmdManager.registerCommand(new AnnounceCommand(this));
         this.cmdManager.registerCommand(new APICommand(this));
         this.cmdManager.registerCommand(new SettingsCommand(this));
     }
