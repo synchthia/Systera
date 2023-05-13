@@ -17,7 +17,7 @@
         <bukkit.plugin.name>Systera</bukkit.plugin.name>
         <bukkit.plugin.main>net.synchthia.systera.SysteraPlugin</bukkit.plugin.main>
         <bukkit.plugin.authors>Synchthia Crew</bukkit.plugin.authors>
-        <bukkit.plugin.api-version>1.14</bukkit.plugin.api-version>
+        <bukkit.plugin.api-version>1.19</bukkit.plugin.api-version>
     </properties>
 
     <repositories>
