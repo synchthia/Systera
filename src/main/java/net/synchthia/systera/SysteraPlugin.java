@@ -4,23 +4,25 @@ import co.aikar.commands.BukkitCommandManager;
 import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import net.synchthia.systera.chat.ChatListener;
-import net.synchthia.systera.commands.APICommand;
-import net.synchthia.systera.commands.AnnounceCommand;
-import net.synchthia.systera.commands.SettingsCommand;
+import net.synchthia.systera.commands.*;
 import net.synchthia.systera.group.GroupStore;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.i18n.I18nManager;
 import net.synchthia.systera.player.PlayerListener;
 import net.synchthia.systera.player.PlayerStore;
+import net.synchthia.systera.player.SysteraPlayer;
+import net.synchthia.systera.punishments.PunishAPI;
+import net.synchthia.systera.stream.RedisClient;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class SysteraPlugin extends JavaPlugin {
     // Environment Variables
@@ -34,15 +36,24 @@ public class SysteraPlugin extends JavaPlugin {
     private final static String apiAddress = System.getenv("SYSTERA_API_ADDRESS") != null ? System.getenv("SYSTERA_API_ADDRESS") : "localhost:17300";
 
     @Getter
+    private final static boolean enableGlobalChat = System.getenv("SYSTERA_GLOBAL_CHAT") != null && Boolean.parseBoolean(System.getenv("SYSTERA_GLOBAL_CHAT"));
+
+    @Getter
     private static SysteraPlugin instance;
 
     @Getter
     @Setter
     private boolean started;
 
+    // Stream
+    @Getter
+    private RedisClient redisClient;
+
     // API
     @Getter
     private APIClient apiClient;
+    @Getter
+    private PunishAPI punishAPI;
 
     // Store
     @Getter
@@ -64,8 +75,7 @@ public class SysteraPlugin extends JavaPlugin {
 
             I18n.setI18nManager(new I18nManager(this));
 
-            this.playerStore = new PlayerStore(this);
-            this.groupStore = new GroupStore(this);
+            registerRedis();
 
             registerAPI();
             registerEvents();
@@ -81,11 +91,50 @@ public class SysteraPlugin extends JavaPlugin {
         }
     }
 
-    private void registerAPI() throws InterruptedException, ExecutionException, TimeoutException {
-        this.getLogger().log(Level.INFO, "API Address: " + apiAddress);
+    public void registerRedis() throws InterruptedException {
+        String hostname = "localhost";
+        Integer port = 6379;
 
+        String redisAddress = System.getenv("SYSTERA_REDIS_ADDRESS");
+        if (redisAddress != null) {
+            if (redisAddress.contains(":")) {
+                String[] splited = redisAddress.split(":");
+                hostname = splited[0];
+                port = Integer.valueOf(splited[1]);
+            } else {
+                hostname = redisAddress;
+            }
+        }
+
+        getLogger().log(Level.INFO, "Redis Address: " + redisAddress);
+        redisClient = new RedisClient(SysteraPlugin.getServerId(), hostname, port);
+    }
+
+    @SneakyThrows
+    public void registerAPI() {
+        this.getLogger().log(Level.INFO, "API Address: " + apiAddress);
         this.apiClient = new APIClient(apiAddress);
-        this.groupStore.fetch().get(5, TimeUnit.SECONDS);
+
+        // API Client
+        this.punishAPI = new PunishAPI(this);
+
+        // Initialize store
+        this.playerStore = new PlayerStore(this);
+        this.groupStore = new GroupStore(this);
+
+        // Sync GroupStore
+        getGroupStore().clear();
+        getGroupStore().fetch().get(5, TimeUnit.SECONDS);
+
+        // Sync PlayerStore
+        getPlayerStore().clear();
+        for (Player player : this.getServer().getOnlinePlayers()) {
+            SysteraPlayer pd = new SysteraPlayer(this, player);
+            pd.fetch().get(5, TimeUnit.SECONDS);
+
+            getPlayerStore().add(player.getUniqueId(), pd);
+            pd.applyPermissionsByGroup();
+        }
     }
 
     private void registerEvents() {
@@ -99,33 +148,42 @@ public class SysteraPlugin extends JavaPlugin {
 
         cmdManager.getCommandCompletions().registerCompletion("punish_reason", c -> ImmutableList.of(
                 "Chat Spam (チャットスパム)",
-                "Advertise (広告)",
                 "Glitch (バグや不具合の意図的な不正利用)",
-                "Obscenity / NSFW Content (不適切なコンテンツ) ",
+                "NSFW Content (不適切なコンテンツ) ",
                 "Griefing (他のユーザーへの迷惑行為)",
                 "Violent Language (不適切な発言)",
-                "Watch your language (不適切な発言)",
-                "Hacking - Fly",
-                "Hacking - Nuke",
-                "Hacking - FastRun",
-                "Hacking - FastEat"
+                "Hack / Cheat (チート行為)",
+                "Others / その他 -> ..."
         ));
 
         cmdManager.getCommandCompletions().registerCompletion("player_settings", c -> {
             if (c.getSender() instanceof Player) {
                 Player player = c.getPlayer();
-                return ImmutableList.copyOf(playerStore.get(player.getUniqueId()).getSettings().getSettings().keySet());
+                SysteraPlayer sp = playerStore.get(player.getUniqueId());
+                List<String> set = sp.getSettings().getSettings().keySet().stream().filter((x) -> sp.getSettings().getSettings().get(x).hasPermission(player)).collect(Collectors.toList());
+                return ImmutableList.copyOf(set);
             }
             return ImmutableList.of();
         });
 
         this.cmdManager.registerCommand(new AnnounceCommand(this));
         this.cmdManager.registerCommand(new APICommand(this));
+        this.cmdManager.registerCommand(new ListCommand(this));
+        this.cmdManager.registerCommand(new ReportCommand(this));
         this.cmdManager.registerCommand(new SettingsCommand(this));
+        this.cmdManager.registerCommand(new SysteraCommand(this));
+        this.cmdManager.registerCommand(new PunishCommand(this));
+        this.cmdManager.registerCommand(new UnBanCommand(this));
+        this.cmdManager.registerCommand(new SeenCommand(this));
+        this.cmdManager.registerCommand(new TellCommand(this));
     }
 
     @Override
+    @SneakyThrows
     public void onDisable() {
+        apiClient.shutdown();
+        redisClient.disconnect();
+
         this.getLogger().log(Level.INFO, "Disabled: " + this.getName());
         this.started = false;
     }

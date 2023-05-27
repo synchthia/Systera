@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class PlayerStore {
     private final SysteraPlugin plugin;
-    private Map<UUID, SysteraPlayer> players = new HashMap<>();
+    private final Map<UUID, SysteraPlayer> players = new HashMap<>();
 
     public PlayerStore(SysteraPlugin plugin) {
         this.plugin = plugin;
@@ -25,6 +25,10 @@ public class PlayerStore {
 
     public void remove(UUID uuid) {
         this.players.remove(uuid);
+    }
+
+    public void clear() {
+        this.players.clear();
     }
 
     public int size() {

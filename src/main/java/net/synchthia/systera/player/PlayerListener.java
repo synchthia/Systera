@@ -1,6 +1,8 @@
 package net.synchthia.systera.player;
 
+import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.i18n.I18n;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,14 +13,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 public class PlayerListener implements Listener {
-    private static final String ERROR_INTERRUPTED = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[INTERRUPTED]";
-    private static final String ERROR_EXECUTION = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[EXECUTION]";
-    private static final String ERROR_TIMEOUT = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[TIMEOUT]";
+    private static final String ERROR_INTERRUPTED = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_INTERRUPTED]";
+    private static final String ERROR_EXECUTION = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_EXECUTION]";
+    private static final String ERROR_TIMEOUT = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_TIMEOUT]";
+    private static final String ERROR_LOOKUP = ChatColor.RED + "Currently not Available: " + ChatColor.GRAY + "[LOOKUP_ERROR]";
     private final SysteraPlugin plugin;
 
     public PlayerListener(SysteraPlugin plugin) {
@@ -29,10 +34,7 @@ public class PlayerListener implements Listener {
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (!plugin.isStarted()) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is Starting...");
-            return;
         }
-
-        // TODO: Fetch Punish Status
     }
 
     @EventHandler
@@ -41,6 +43,21 @@ public class PlayerListener implements Listener {
 
         if (!event.getResult().equals(PlayerLoginEvent.Result.ALLOWED) && !event.getResult().equals(PlayerLoginEvent.Result.KICK_WHITELIST)) {
             return;
+        }
+
+        // Check punish
+        List<SysteraProtos.PunishEntry> punishList = null;
+        try {
+            punishList = plugin.getPunishAPI().lookup(player.getUniqueId(), SysteraProtos.PunishLevel.TEMPBAN).get(5, TimeUnit.SECONDS).getEntryList();
+
+            if (punishList.size() != 0) {
+                SysteraProtos.PunishEntry entry = punishList.get(punishList.size() - 1);
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, plugin.getPunishAPI().message(player.getUniqueId(), entry.getLevel(), entry.getReason(), entry.getDate(), entry.getExpire()));
+                return;
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            plugin.getLogger().log(Level.SEVERE, "Exception threw executing check punish", e);
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ERROR_LOOKUP);
         }
 
         // Init Player Profile
@@ -69,25 +86,44 @@ public class PlayerListener implements Listener {
 
         event.setJoinMessage(null);
 
+        // Whitelist
+        if (player.hasPermission("minecraft.command.whitelist") && plugin.getServer().hasWhitelist()) {
+            player.sendMessage(I18n.get(player, "whitelist.notify"));
+        }
+
         // Vanish
-        if (!player.hasPermission("systera.vanish")) {
-            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getVanish().getValue()).forEach(sp -> {
+        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        if (player.hasPermission(sp.getSettings().getVanish().getPermission())) {
+            if (sp.getSettings().getVanish().getValue()) {
+                player.sendMessage(I18n.get(player, "vanish.notify"));
+            }
+        } else {
+            // Force disable vanish when removed perms
+            if (sp.getSettings().getVanish().getValue()) {
+                sp.getSettings().getVanish().setValue(player, false);
+            }
+
+            // Hide Player
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getVanish().getValue()).forEach(targetSp -> {
                 if (player.getPlayer() != null) {
-                    player.getPlayer().hidePlayer(plugin, sp.getPlayer());
+                    player.getPlayer().hidePlayer(plugin, targetSp.getPlayer());
                 }
             });
         }
 
-        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
         if (sp.getSettings().getVanish().getValue()) {
-            plugin.getServer().getOnlinePlayers().stream()
-                    .filter(p -> !p.hasPermission("systera.vanish"))
-                    .forEach(p -> p.hidePlayer(plugin, player));
+            plugin.getServer().getOnlinePlayers().stream().filter(p -> !p.hasPermission(sp.getSettings().getVanish().getPermission())).forEach(p -> p.hidePlayer(plugin, player));
         } else {
-            plugin.getPlayerStore().list().stream()
-                    .filter(p -> p.getSettings().getJoinMessage().getValue())
-                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
         }
+
+        // Current server
+        plugin.getApiClient().setPlayerServer(player.getUniqueId(), SysteraPlugin.getServerId()).whenComplete(((empty, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed update player server");
+                throwable.printStackTrace();
+            }
+        }));
     }
 
     @EventHandler
@@ -97,10 +133,16 @@ public class PlayerListener implements Listener {
         event.setQuitMessage(null);
 
         if (!plugin.getPlayerStore().get(player.getUniqueId()).getSettings().getVanish().getValue()) {
-            plugin.getPlayerStore().list().stream()
-                    .filter(p -> p.getSettings().getJoinMessage().getValue())
-                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Quit> " + player.getName()));
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Quit> " + player.getName()));
         }
+
+        // Current server
+        plugin.getApiClient().quitServer(player.getUniqueId(), SysteraPlugin.getServerId()).whenComplete(((empty, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed update player server");
+                throwable.printStackTrace();
+            }
+        }));
 
         plugin.getPlayerStore().remove(player.getUniqueId());
     }

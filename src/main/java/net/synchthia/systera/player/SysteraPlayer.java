@@ -1,6 +1,6 @@
 package net.synchthia.systera.player;
 
-import lombok.Data;
+import lombok.Getter;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
@@ -14,16 +14,26 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
-@Data
 public class SysteraPlayer {
     private final SysteraPlugin plugin;
+
+    @Getter
     private final Player player;
+
+    @Getter
     private UUID uuid;
+
+    @Getter
     private String name;
+
+    @Getter
     private List<String> groups;
+
+    @Getter
     private Settings settings;
 
     // Group
+    @Getter
     private PermissionAttachment attachment;
 
     public SysteraPlayer(SysteraPlugin plugin, Player player) {
@@ -78,42 +88,48 @@ public class SysteraPlayer {
         }
     }
 
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
+        applyPermissionsByGroup();
+    }
+
     public void applyPermissionsByGroup() {
         refreshAttachment();
 
         player.setPlayerListName(getPrefix() + player.getName());
 
-        this.groups.forEach(groupName -> {
-            Group group = plugin.getGroupStore().get(groupName);
+        plugin.getLogger().log(Level.INFO, String.format("[%s] Group: %s", player.getName(), this.groups));
+
+        this.groups.stream().map(groupName -> plugin.getGroupStore().get(groupName)).forEach(group -> {
             if (group != null) {
                 applyPermissions(group.getGlobalPerms());
                 applyPermissions(group.getServerPerms());
+            } else {
+                plugin.getLogger().log(Level.WARNING, "Group is null");
             }
         });
     }
 
-    private void refreshAttachment() {
+    public void refreshAttachment() {
         if (this.attachment != null) {
             player.removeAttachment(this.attachment);
-            this.attachment = player.addAttachment(this.plugin);
         }
+
+        this.attachment = player.addAttachment(this.plugin);
     }
 
     public void applyPermissions(List<String> permissions) {
-        permissions.forEach(perm -> {
+        permissions.forEach((perm) -> {
             if (perm.startsWith("-")) {
-                attachment.setPermission(perm.replaceFirst("-", ""), false);
+                this.attachment.setPermission(perm.replaceFirst("-", ""), false);
             } else {
-                attachment.setPermission(perm, true);
+                this.attachment.setPermission(perm, true);
             }
         });
 
         player.recalculatePermissions();
+        player.updateCommands();
 
-        if (player.hasPermission("systera.op")) {
-            player.setOp(true);
-        } else {
-            player.setOp(false);
-        }
+        player.setOp(player.hasPermission("systera.op"));
     }
 }

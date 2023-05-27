@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 public class GroupStore {
     private final SysteraPlugin plugin;
-    private Map<String, Group> groups = new HashMap<>();
+    private final Map<String, Group> groups = new HashMap<>();
 
     public GroupStore(SysteraPlugin plugin) {
         this.plugin = plugin;
@@ -26,6 +26,10 @@ public class GroupStore {
 
     public void remove(String name) {
         this.groups.remove(name);
+    }
+
+    public void clear() {
+        this.groups.clear();
     }
 
     public int size() {

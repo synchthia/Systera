@@ -11,8 +11,6 @@ import net.synchthia.systera.settings.Settings;
 import net.synchthia.systera.util.StringUtil;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
 @RequiredArgsConstructor
 public class SettingsCommand extends BaseCommand {
     private final SysteraPlugin plugin;
@@ -33,7 +31,9 @@ public class SettingsCommand extends BaseCommand {
         if (name == null && value == null) {
             I18n.sendMessage(player, "player.settings.header");
             settings.getSettings().forEach((k, v) -> {
-                showStatus(player, k, v.getValue());
+                if (v.hasPermission(player)) {
+                    showStatus(player, k, v.getValue());
+                }
             });
             I18n.sendMessage(player, "player.settings.footer");
 
@@ -42,7 +42,7 @@ public class SettingsCommand extends BaseCommand {
 
         if (name != null) {
             BaseSettings k = settings.getSettings().get(name.toLowerCase());
-            if (!settings.getSettings().containsKey(name.toLowerCase())) {
+            if (!settings.getSettings().containsKey(name.toLowerCase()) || !k.hasPermission(player)) {
                 I18n.sendMessage(player, "player.settings.error.not_found", name.toLowerCase());
                 return;
             }
@@ -61,6 +61,7 @@ public class SettingsCommand extends BaseCommand {
             plugin.getApiClient().setPlayerSettings(player.getUniqueId(), proto).whenComplete(((r, th) -> {
                 if (th != null) {
                     I18n.sendMessage(player, "player.settings.error.sync_failed");
+                    th.printStackTrace();
                 }
             }));
         }

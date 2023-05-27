@@ -1,6 +1,27 @@
+general:
+  error:
+    internal_error: "&cAn internal error has occurred. Please contact the staff."
+    permission_denied: "&cYou don't have permission to do this."
+
+chat:
+  error:
+    not_received: "&cYou haven't received Private message from anyone."
+
+  tell:
+    send: "&7[&6{0} &7-> &7{1}&7] &f{2}"
+    receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
+    spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
+
 player:
   error:
+    not_found: "&cPlayer not found."
     local_profile: "&cLocal profile error. Please re-login."
+    offline: "&cPlayer is offline: {0}"
+
+  seen:
+    online: "&7{0} &7is &6online &7on &a{1} &7since &3{2}"
+    vanish: "&7{0} &7is &evanish &7on &a{1} &7since &3{2}"
+    offline: "&7{0} &7is &coffline &7since &3{1}"
 
   settings:
     error:
@@ -13,3 +34,47 @@ player:
 
     entry: "&6{0}: {1}"
     footer: "&8&l&m--------------------------------------------"
+
+punishments:
+  error:
+    no_profile: "&c{0} is not found!"
+    duplicate: "&c{0} is already punished!"
+    cooldown: "&c{0}'s Temporary BAN is not expired!"
+
+  notify: "&9&lPunish &7[{0}] &8> &6&l{1} &e&lwas punished for: &a&l{2}"
+  unban: "&aUnbanned: {0}"
+
+  dialog:
+    warn: |
+      &8&m[&c&lWARNING&8&m]-----------------------------------
+      &c&l
+      &c&l*** You have been WARNED! ***
+      &c&l
+      &e&lReason: &r{0}
+      &e&l
+      &8&m--------------------------------------------
+    kick: |
+      &c&lYou are Kicked from this server!
+      &e&lReason: &r{0}
+    tempban: |
+      &c&lYou are Temporary Banned from this server!
+      &eReason: &r{0}
+      &eDate: &e&l{1}
+      &7Expire: &7&l{2}
+    permban: |
+      &c&lYou are Permanently Banned from this server!
+      &eReason: &r{0}
+      &eDate: &e&l{1}
+      &7Expire: &7&l[FOREVER]
+
+report:
+  thanks: |
+    &eThank you for your report. Staff will support shortly.
+    &cNote: This command Emergency Only. Do not Spamming this command.
+  notify: "&9&lReport &7[{0}] &8> &6{1} &6-> &6{2} &8> &a{3}"
+
+vanish:
+  notify: "&e* Vanish enabled!"
+
+whitelist:
+  notify: "&a* Whitelist enabled!"

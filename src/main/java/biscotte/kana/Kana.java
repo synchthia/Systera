@@ -6,7 +6,7 @@ package biscotte.kana;
 public class Kana {
     private String srcLine;
     private String cnvLine;
-    private String[][] r2kTable = {
+    private final String[][] r2kTable = {
             {"", "あ", "い", "う", "え", "お"},             // 0.
             {"k", "か", "き", "く", "け", "こ"},             // 1.
             {"s", "さ", "し", "す", "せ", "そ"},             // 2.

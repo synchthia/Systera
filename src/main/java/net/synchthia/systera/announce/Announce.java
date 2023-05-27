@@ -2,6 +2,7 @@ package net.synchthia.systera.announce;
 
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.util.StringUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
@@ -11,13 +12,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class Announce extends BukkitRunnable {
     private final String fullMessage;
-    private BossBar bossBar;
-    private Player player;
+    private final BossBar bossBar;
+    private final Player player;
     private String message;
+    private String rawMessage;
     private int count;
-    private int strLen;
+    private final int strLen;
     private int limit;
-    private int dismissTime;
+    private final int dismissTime;
 
     private String colorCode = "";
 
@@ -25,6 +27,7 @@ public class Announce extends BukkitRunnable {
         this.bossBar = SysteraPlugin.getInstance().getServer().createBossBar("", BarColor.RED, BarStyle.SOLID, BarFlag.DARKEN_SKY);
         this.player = player;
         this.message = setFormat(message);
+        this.rawMessage = message;
         this.fullMessage = setFormat(message);
         this.count = 0;
         this.strLen = setFormat(message).length();
@@ -39,6 +42,9 @@ public class Announce extends BukkitRunnable {
     }
 
     public void sendAnnounce() {
+        player.sendMessage(ChatColor.GRAY + "----------------------------------");
+        player.sendMessage(StringUtil.coloring(this.rawMessage));
+        player.sendMessage(ChatColor.GRAY + "----------------------------------");
         this.runTaskTimerAsynchronously(SysteraPlugin.getInstance(), 0L, 3L);
     }
 
@@ -54,7 +60,7 @@ public class Announce extends BukkitRunnable {
 
         // Has Color Code
         String dispStart = message.substring(0, startColorCnt + 1); // [T]EST OR [&4T]EST OR [&4&cT]EST
-        String dispEnd = message.substring(startColorCnt + 1, message.length()); // T[EST]
+        String dispEnd = message.substring(startColorCnt + 1); // T[EST]
         if (startColorCnt > 0) {
             colorCode = dispStart.substring(0, startColorCnt);
         }
@@ -85,7 +91,7 @@ public class Announce extends BukkitRunnable {
         // str = &c&lTEST
         int colors = 0;
         // [&]c&lTEST
-        while (str.substring(colors, colors + 1).equals("&")) {
+        while (str.charAt(colors) == '&') {
             colors += 2;
         }
         return colors;

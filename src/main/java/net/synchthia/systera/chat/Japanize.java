@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public class Japanize {
             return "";
         }
         //matchで指定されている、英語以外の文字列が含まれている場合, 文字の頭に#が付いている場合は無視
-        if (matcher.find(0) || convertString.startsWith("#")) {
+        if (matcher.find(0) || convertString.startsWith("#") || convertString.startsWith(".")) {
             return "";
         }
         kana.setLine(convertString);
@@ -41,14 +42,14 @@ public class Japanize {
                 .replace(".", "。");
 
         try {
-            String encodeString = URLEncoder.encode(converted, "utf-8");
+            String encodeString = URLEncoder.encode(converted, StandardCharsets.UTF_8);
             String apiURLString = "https://www.google.com/transliterate?langpair=ja-Hira|ja&text=" + encodeString;
             URL apiURL = new URL(apiURLString);
             HttpURLConnection connection = (HttpURLConnection) apiURL.openConnection();
             connection.setConnectTimeout(1000);
             connection.setRequestMethod("GET");
             connection.connect();
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             JsonElement rootElement = new JsonParser().parse(br.readLine());
             Iterator<JsonElement> iterator = rootElement.getAsJsonArray().iterator();
