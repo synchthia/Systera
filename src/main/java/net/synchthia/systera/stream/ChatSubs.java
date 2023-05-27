@@ -27,7 +27,7 @@ public class ChatSubs extends JedisPubSub {
                 }
 
                 // Log
-                plugin.getLogger().log(Level.INFO, StringUtil.coloring(String.format("[GlobalChat] %s", stream.getChatEntry().getMessage())));
+                plugin.getLogger().log(Level.INFO, StringUtil.coloring(String.format("[GlobalChat] [%s]%s: %s", stream.getChatEntry().getServerName(), stream.getChatEntry().getAuthor().getName(), stream.getChatEntry().getMessage())));
 
                 // Send to Player
                 plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getServer().getOnlinePlayers().forEach(player -> {
