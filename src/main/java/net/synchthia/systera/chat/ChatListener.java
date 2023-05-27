@@ -28,7 +28,12 @@ public class ChatListener implements Listener {
         SysteraPlayer systeraPlayer = plugin.getPlayerStore().get(player.getUniqueId());
         boolean isGlobal = SysteraPlugin.isEnableGlobalChat() && systeraPlayer.getSettings().getGlobalChat().getValue();
 
-        String format = String.format("%s&7%s&a:&r ", isGlobal ? "" : "&8[local]", player.getDisplayName());
+        String format = String.format("&7%s&a:&r ", player.getDisplayName());
+
+        if (SysteraPlugin.isEnableGlobalChat()) {
+            format = String.format("%s&7%s&a:&r ", isGlobal ? String.format("&7[%s]", SysteraPlugin.getServerId()) : "&8[local]", player.getDisplayName());
+        }
+
         String japanizeMsg = "";
         if (systeraPlayer.getSettings().getJapanize().getValue()) {
             String converted = japanize.convert(event.getMessage());
