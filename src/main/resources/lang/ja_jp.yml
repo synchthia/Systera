@@ -41,7 +41,7 @@ punishments:
     duplicate: "&c{0}は既に処罰されています！"
     cooldown: "&c{0}の処罰期限がまだ有効です！"
 
-  notify: "&9&lPunish &7[{0}] &8> &6&l{1} &e&lは&a&l{2}&として処されました"
+  notify: "&c&lPunish &7[{0}] &8> &6&l{1} &e&lは&a&l{2}&e&lとして処されました"
   unban: "&aBAN解除: {0}"
 
   dialog:

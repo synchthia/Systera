@@ -41,7 +41,7 @@ punishments:
     duplicate: "&c{0} is already punished!"
     cooldown: "&c{0}'s Temporary BAN is not expired!"
 
-  notify: "&9&lPunish &7[{0}] &8> &6&l{1} &e&lwas punished for: &a&l{2}"
+  notify: "&c&lPunish &7[{0}] &8> &6&l{1} &e&lwas punished for: &a&l{2}"
   unban: "&aUnbanned: {0}"
 
   dialog:
