@@ -45,7 +45,7 @@ public class PunishCommand extends BaseCommand {
         }
     }
 
-    @CommandAlias("permban|pban|ppunish")
+    @CommandAlias("ban|permban|pban|ppunish")
     @CommandPermission("systera.command.punishment")
     @CommandCompletion("@players @punish_reason")
     @Description("Permanently BAN Command")
