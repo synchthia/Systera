@@ -24,13 +24,9 @@ public class ReportCommand extends BaseCommand {
     @Description("Report to Staff")
     public void onReport(CommandSender sender, String target, String message) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
-        if (targetPlayer == null) {
-            I18n.sendMessage(sender, "player.error.not_found");
-            return;
-        }
 
-        UUID toUUID = targetPlayer.getUniqueId();
-        String toName = targetPlayer.getName();
+        UUID toUUID = targetPlayer != null ? targetPlayer.getUniqueId() : null;
+        String toName = targetPlayer != null ? targetPlayer.getName() : target;
 
         I18n.sendMessage(sender, "report.thanks");
 

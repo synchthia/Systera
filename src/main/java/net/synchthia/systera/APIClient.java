@@ -86,8 +86,8 @@ public class APIClient {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
 
-    private String toString(@NonNull UUID uuid) {
-        return uuid.toString().replaceAll("-", "");
+    private String toString(UUID uuid) {
+        return uuid != null ? uuid.toString().replaceAll("-", "") : "";
     }
 
     public static UUID toUUID(@NonNull String plain) {
@@ -96,10 +96,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.Empty> announce(@NonNull String target, @NonNull String message) {
-        AnnounceRequest request = AnnounceRequest.newBuilder()
-                .setTarget(target)
-                .setMessage(message)
-                .build();
+        AnnounceRequest request = AnnounceRequest.newBuilder().setTarget(target).setMessage(message).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.announce(request, new CompletableFutureObserver<>(future));
@@ -108,10 +105,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.Empty> dispatch(@NonNull String target, @NonNull String cmd) {
-        DispatchRequest request = DispatchRequest.newBuilder()
-                .setTarget(target)
-                .setCmd(cmd)
-                .build();
+        DispatchRequest request = DispatchRequest.newBuilder().setTarget(target).setCmd(cmd).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.dispatch(request, new CompletableFutureObserver<>(future));
@@ -121,16 +115,10 @@ public class APIClient {
 
     public CompletableFuture<SysteraProtos.Empty> chat(@NonNull PlayerIdentity author, @NonNull String serverName, @NonNull String message) {
         // Entry
-        ChatEntry entry = ChatEntry.newBuilder()
-                .setAuthor(author)
-                .setServerName(serverName)
-                .setMessage(message)
-                .build();
+        ChatEntry entry = ChatEntry.newBuilder().setAuthor(author).setServerName(serverName).setMessage(message).build();
 
         // Request
-        ChatRequest request = ChatRequest.newBuilder()
-                .setEntry(entry)
-                .build();
+        ChatRequest request = ChatRequest.newBuilder().setEntry(entry).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.chat(request, new CompletableFutureObserver<>(future));
@@ -139,12 +127,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.InitPlayerProfileResponse> initPlayerProfile(@NonNull UUID uuid, @NonNull String name, @NonNull String ipAddress, @NonNull String hostname) {
-        InitPlayerProfileRequest request = InitPlayerProfileRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .setName(name)
-                .setIpAddress(ipAddress)
-                .setHostname(hostname)
-                .build();
+        InitPlayerProfileRequest request = InitPlayerProfileRequest.newBuilder().setUuid(toString(uuid)).setName(name).setIpAddress(ipAddress).setHostname(hostname).build();
 
         CompletableFuture<SysteraProtos.InitPlayerProfileResponse> future = new CompletableFuture<>();
         stub.initPlayerProfile(request, new CompletableFutureObserver<>(future));
@@ -153,9 +136,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.FetchPlayerProfileResponse> fetchPlayerProfile(@NonNull UUID uuid) {
-        FetchPlayerProfileRequest request = FetchPlayerProfileRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .build();
+        FetchPlayerProfileRequest request = FetchPlayerProfileRequest.newBuilder().setUuid(toString(uuid)).build();
 
         CompletableFuture<SysteraProtos.FetchPlayerProfileResponse> future = new CompletableFuture<>();
         stub.fetchPlayerProfile(request, new CompletableFutureObserver<>(future));
@@ -164,9 +145,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.FetchPlayerProfileResponse> fetchPlayerProfileByName(@NonNull String name) {
-        FetchPlayerProfileByNameRequest request = FetchPlayerProfileByNameRequest.newBuilder()
-                .setName(name)
-                .build();
+        FetchPlayerProfileByNameRequest request = FetchPlayerProfileByNameRequest.newBuilder().setName(name).build();
 
         CompletableFuture<SysteraProtos.FetchPlayerProfileResponse> future = new CompletableFuture<>();
         stub.fetchPlayerProfileByName(request, new CompletableFutureObserver<>(future));
@@ -175,10 +154,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.Empty> setPlayerServer(@NonNull UUID uuid, String serverName) {
-        SetPlayerServerRequest request = SetPlayerServerRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .setServerName(serverName)
-                .build();
+        SetPlayerServerRequest request = SetPlayerServerRequest.newBuilder().setUuid(toString(uuid)).setServerName(serverName).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.setPlayerServer(request, new CompletableFutureObserver<>(future));
@@ -187,10 +163,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.Empty> quitServer(@NonNull UUID uuid, String serverName) {
-        RemovePlayerServerRequest request = RemovePlayerServerRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .setServerName(serverName)
-                .build();
+        RemovePlayerServerRequest request = RemovePlayerServerRequest.newBuilder().setUuid(toString(uuid)).setServerName(serverName).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.removePlayerServer(request, new CompletableFutureObserver<>(future));
@@ -199,10 +172,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.Empty> setPlayerSettings(@NonNull UUID uuid, PlayerSettings settings) {
-        SetPlayerSettingsRequest request = SetPlayerSettingsRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .setSettings(settings)
-                .build();
+        SetPlayerSettingsRequest request = SetPlayerSettingsRequest.newBuilder().setUuid(toString(uuid)).setSettings(settings).build();
 
         CompletableFuture<SysteraProtos.Empty> future = new CompletableFuture<>();
         stub.setPlayerSettings(request, new CompletableFutureObserver<>(future));
@@ -211,11 +181,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.GetPlayerPunishResponse> getPlayerPunishment(@NonNull UUID uuid, PunishLevel filterLevel, Boolean includeExpired) {
-        GetPlayerPunishRequest request = GetPlayerPunishRequest.newBuilder()
-                .setUuid(toString(uuid))
-                .setFilterLevel(filterLevel)
-                .setIncludeExpired(includeExpired)
-                .build();
+        GetPlayerPunishRequest request = GetPlayerPunishRequest.newBuilder().setUuid(toString(uuid)).setFilterLevel(filterLevel).setIncludeExpired(includeExpired).build();
 
         CompletableFuture<SysteraProtos.GetPlayerPunishResponse> future = new CompletableFuture<>();
         stub.getPlayerPunish(request, new CompletableFutureObserver<>(future));
@@ -224,20 +190,9 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.SetPlayerPunishResponse> setPlayerPunishment(@NonNull Boolean remote, @NonNull Boolean force, PlayerIdentity fromPlayer, PlayerIdentity toPlayer, PunishLevel level, String reason, Long expire) {
-        PunishEntry entry = PunishEntry.newBuilder()
-                .setLevel(level)
-                .setReason(reason)
-                .setDate(DateUtil.getEpochMilliTime())
-                .setExpire(expire)
-                .setPunishedFrom(fromPlayer)
-                .setPunishedTo(toPlayer)
-                .build();
+        PunishEntry entry = PunishEntry.newBuilder().setLevel(level).setReason(reason).setDate(DateUtil.getEpochMilliTime()).setExpire(expire).setPunishedFrom(fromPlayer).setPunishedTo(toPlayer).build();
 
-        SetPlayerPunishRequest request = SetPlayerPunishRequest.newBuilder()
-                .setRemote(remote)
-                .setForce(force)
-                .setEntry(entry)
-                .build();
+        SetPlayerPunishRequest request = SetPlayerPunishRequest.newBuilder().setRemote(remote).setForce(force).setEntry(entry).build();
 
         CompletableFuture<SysteraProtos.SetPlayerPunishResponse> future = new CompletableFuture<>();
         stub.setPlayerPunish(request, new CompletableFutureObserver<>(future));
@@ -246,9 +201,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.UnBanResponse> unBanPlayer(PlayerIdentity target) {
-        UnBanRequest request = UnBanRequest.newBuilder()
-                .setTarget(target)
-                .build();
+        UnBanRequest request = UnBanRequest.newBuilder().setTarget(target).build();
 
         CompletableFuture<SysteraProtos.UnBanResponse> future = new CompletableFuture<>();
         stub.unBan(request, new CompletableFutureObserver<>(future));
@@ -257,22 +210,11 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.ReportResponse> report(UUID fromUUID, String fromName, UUID toUUID, String toName, String serverName, String message) {
-        PlayerIdentity from = PlayerIdentity.newBuilder()
-                .setUuid(toString(fromUUID))
-                .setName(fromName)
-                .build();
+        PlayerIdentity from = PlayerIdentity.newBuilder().setUuid(toString(fromUUID)).setName(fromName).build();
 
-        PlayerIdentity to = PlayerIdentity.newBuilder()
-                .setUuid(toString(toUUID))
-                .setName(toName)
-                .build();
+        PlayerIdentity to = PlayerIdentity.newBuilder().setUuid(toString(toUUID)).setName(toName).build();
 
-        ReportRequest request = ReportRequest.newBuilder()
-                .setFrom(from)
-                .setTo(to)
-                .setServerName(serverName)
-                .setMessage(message)
-                .build();
+        ReportRequest request = ReportRequest.newBuilder().setFrom(from).setTo(to).setServerName(serverName).setMessage(message).build();
 
         CompletableFuture<SysteraProtos.ReportResponse> future = new CompletableFuture<>();
         stub.report(request, new CompletableFutureObserver<>(future));
@@ -280,9 +222,7 @@ public class APIClient {
     }
 
     public CompletableFuture<SysteraProtos.FetchGroupsResponse> fetchGroups(@NonNull String serverName) {
-        SysteraProtos.FetchGroupsRequest request = SysteraProtos.FetchGroupsRequest.newBuilder()
-                .setServerName(serverName)
-                .build();
+        SysteraProtos.FetchGroupsRequest request = SysteraProtos.FetchGroupsRequest.newBuilder().setServerName(serverName).build();
         CompletableFuture<SysteraProtos.FetchGroupsResponse> future = new CompletableFuture<>();
         stub.fetchGroups(request, new CompletableFutureObserver<>(future));
         return future;
@@ -308,9 +248,6 @@ public class APIClient {
     }
 
     public static PlayerIdentity buildPlayerIdentity(String uuid, String name) {
-        return PlayerIdentity.newBuilder()
-                .setUuid(uuid.replaceAll("-", ""))
-                .setName(name)
-                .build();
+        return PlayerIdentity.newBuilder().setUuid(uuid.replaceAll("-", "")).setName(name).build();
     }
 }
