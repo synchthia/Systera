@@ -1,5 +1,6 @@
 package net.synchthia.systera.stream;
 
+import net.kyori.adventure.text.Component;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
@@ -41,7 +42,7 @@ public class ChatSubs extends JedisPubSub {
                     SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
                     Settings settings = sp.getSettings();
                     if (settings.getGlobalChat().getValue() && sp.getIgnoreList().stream().noneMatch(x -> APIClient.toUUID(chatEntry.getAuthor().getUuid()).equals(APIClient.toUUID(x.getUuid())))) {
-                        player.sendMessage(finalFmt);
+                        player.sendMessage(Component.text(finalFmt));
                     }
                 }));
 

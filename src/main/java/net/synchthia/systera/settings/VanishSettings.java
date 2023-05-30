@@ -23,12 +23,18 @@ public class VanishSettings extends BaseSettings {
                     .forEach(p -> {
                         p.hidePlayer(plugin, player);
                         p.setSleepingIgnored(true);
+                        p.setCanPickupItems(false);
+                        p.setVisibleByDefault(true);
+                        p.setSilent(true);
                     });
         } else {
             plugin.getServer().getOnlinePlayers()
                     .forEach(p -> {
                         p.showPlayer(plugin, player);
                         p.setSleepingIgnored(false);
+                        p.setCanPickupItems(true);
+                        p.setVisibleByDefault(false);
+                        p.setSilent(false);
                     });
         }
     }
