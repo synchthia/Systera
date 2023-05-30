@@ -1,11 +1,11 @@
 general:
   error:
     internal_error: "&cAn internal error has occurred. Please contact the staff."
-    permission_denied: "&cYou don't have permission to do this."
+    permission_denied: "&cYou don''t have permission to do this."
 
 chat:
   error:
-    not_received: "&cYou haven't received Private message from anyone."
+    not_received: "&cYou haven''t received Private message from anyone."
     already_ignored: "&c{0} is already ignored!"
     not_ignored: "&c{0} is not ignored!"
     ignore: "&cFailed ignore {0}: {1}"
@@ -53,7 +53,7 @@ punishments:
   error:
     no_profile: "&c{0} is not found!"
     duplicate: "&c{0} is already punished!"
-    cooldown: "&c{0}'s Temporary BAN is not expired!"
+    cooldown: "&c{0}'''s Temporary BAN is not expired!"
 
   notify: "&c&lPunish &7[{0}] &8> &6&l{1} &e&lwas punished for: &a&l{2}"
   unban: "&aUnbanned: {0}"
