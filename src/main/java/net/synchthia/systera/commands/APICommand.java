@@ -100,6 +100,7 @@ public class APICommand extends BaseCommand {
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
         sender.sendMessage("Ignores (Local): ");
         sender.sendMessage(sp.getIgnoreList().toString());
+        sender.sendMessage("Client: " + sp.getPlayer().getClientBrandName());
 
     }
 
