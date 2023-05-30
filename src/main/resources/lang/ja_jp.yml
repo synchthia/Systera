@@ -19,9 +19,9 @@ chat:
     receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
     spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
 
-    ignore:
-      success: "&a無視しました: {0}"
-      title: "&b無視リスト:"
+  ignore:
+    success: "&a無視しました: {0}"
+    title: "&b無視リスト:"
 
     unignore:
       success: "&a無視を解除しました: {0}"
