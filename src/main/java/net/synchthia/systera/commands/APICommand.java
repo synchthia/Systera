@@ -2,15 +2,23 @@ package net.synchthia.systera.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import lombok.RequiredArgsConstructor;
+import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.group.Group;
 import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.util.StringUtil;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @CommandAlias("api")
 @CommandPermission("systera.command.api")
@@ -65,5 +73,49 @@ public class APICommand extends BaseCommand {
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
 //        sp.removeAttachments();
         sp.refreshAttachment();
+    }
+
+    @Subcommand("player")
+    @CommandCompletion("@players")
+    public void onPlayer(CommandSender sender, String target) {
+        OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(target);
+        if (offlinePlayer == null) {
+            sender.sendMessage(ChatColor.RED + "Player not found");
+            return;
+        }
+
+        sender.sendMessage("Name: " + offlinePlayer.getName());
+        sender.sendMessage("UUID: " + offlinePlayer.getUniqueId());
+        Player player = offlinePlayer.getPlayer();
+        if (player == null) {
+            sender.sendMessage("** Player is null **");
+            return;
+        }
+
+        sender.sendMessage("Name: " + player.getName());
+        sender.sendMessage("DisplayName: " + player.getDisplayName());
+        sender.sendMessage("Locale: " + player.getLocale());
+
+        sender.sendMessage(" --- ");
+        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        sender.sendMessage("Ignores (Local): ");
+        sender.sendMessage(sp.getIgnoreList().toString());
+
+    }
+
+    @Subcommand("getpi")
+    @CommandCompletion("@players")
+    public void onGetPI(CommandSender sender, String target) {
+        try {
+            SysteraProtos.GetPlayerIdentityByNameResponse pi = plugin.getApiClient().getPlayerIdentity(target).get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new RuntimeException(e);
+        } catch (RuntimeException e) {
+
+        }
     }
 }

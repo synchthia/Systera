@@ -36,9 +36,9 @@ public class PunishAPI {
 
         // Online Player
         if (player != null) {
-            identity = APIClient.buildPlayerIdentity(player.getUniqueId().toString().replace("-", ""), player.getName());
+            identity = APIClient.buildPlayerIdentity(player.getUniqueId(), player.getName());
         } else {
-            identity = APIClient.buildPlayerIdentity("", target);
+            identity = APIClient.buildPlayerIdentity(null, target);
         }
 
         return plugin.getApiClient().unBanPlayer(identity).whenComplete((result, throwable) -> {
@@ -49,24 +49,24 @@ public class PunishAPI {
     }
 
     public CompletableFuture<SysteraProtos.SetPlayerPunishResponse> punish(Boolean force, SysteraProtos.PunishLevel punishLevel, CommandSender sender, String toPlayerName, String reason, Long expire) {
-        String fromPlayerUUID = "";
+        UUID fromPlayerUUID = null;
         String fromPlayerName = sender.getName();
 
-        String toPlayerUUID = "";
+        UUID toPlayerUUID = null;
 
         if (punishLevel.equals(SysteraProtos.PunishLevel.UNRECOGNIZED)) {
             punishLevel = SysteraProtos.PunishLevel.PERMBAN;
         }
 
         if (plugin.getServer().getPlayer(fromPlayerName) != null) {
-            fromPlayerUUID = plugin.getServer().getPlayer(fromPlayerName).getUniqueId().toString();
+            fromPlayerUUID = plugin.getServer().getPlayer(fromPlayerName).getUniqueId();
         }
 
         // target
         boolean remote;
         if (plugin.getServer().getOnlinePlayers().contains(plugin.getServer().getPlayer(toPlayerName))) {
             remote = false;
-            toPlayerUUID = plugin.getServer().getPlayer(toPlayerName).getUniqueId().toString();
+            toPlayerUUID = plugin.getServer().getPlayer(toPlayerName).getUniqueId();
         } else {
             remote = true;
         }

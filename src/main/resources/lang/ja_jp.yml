@@ -6,11 +6,25 @@ general:
 chat:
   error:
     not_received: "&c誰からもプライベートメッセージを受け取っていません。"
+    already_ignored: "&c{0}は既に無視しています！"
+    not_ignored: "&c{0}は無視していません！"
+    ignore: "&c無視リストの追加に失敗しました {0}: {1}"
+    unignore: "&c無視リストの除外に失敗しました {0}: {1}"
+    cant_mute_myself: "&c自分自身を無視することはできません"
+    ignore_empty: "&c誰も無視していません！"
+    cant_send_to_ignoring: "&c無視しているプレイヤーにメッセージは送信できません！"
 
   tell:
     send: "&7[&6{0} &7-> &7{1}&7] &f{2}"
     receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
     spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
+
+    ignore:
+      success: "&a無視しました: {0}"
+      title: "&b無視リスト:"
+
+    unignore:
+      success: "&a無視を解除しました: {0}"
 
 player:
   error:

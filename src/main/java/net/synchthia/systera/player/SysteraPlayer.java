@@ -9,6 +9,7 @@ import net.synchthia.systera.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +33,8 @@ public class SysteraPlayer {
     @Getter
     private Settings settings;
 
+    private List<SysteraProtos.PlayerIdentity> ignoreList;
+
     // Group
     @Getter
     private PermissionAttachment attachment;
@@ -40,6 +43,10 @@ public class SysteraPlayer {
         this.plugin = plugin;
         this.player = player;
         this.attachment = player.addAttachment(this.plugin);
+    }
+
+    public List<SysteraProtos.PlayerIdentity> getIgnoreList() {
+        return ignoreList;
     }
 
     public CompletableFuture<SysteraProtos.InitPlayerProfileResponse> init(String address, String hostname) {
@@ -65,12 +72,30 @@ public class SysteraPlayer {
         });
     }
 
+    public CompletableFuture<SysteraProtos.ChatIgnoreResponse> ignorePlayer(SysteraProtos.PlayerIdentity targetPlayer) {
+        return plugin.getApiClient().addChatIgnore(this.player.getUniqueId(), targetPlayer).whenComplete((res, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed ignore player: ", throwable);
+            }
+        });
+    }
+
+    public CompletableFuture<SysteraProtos.ChatIgnoreResponse> unIgnorePlayer(SysteraProtos.PlayerIdentity targetPlayer) {
+        return plugin.getApiClient().removeChatIgnore(this.player.getUniqueId(), targetPlayer).whenComplete((res, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed unignore player: ", throwable);
+            }
+        });
+    }
+
+
     // TODO: to static method?
     private void fromProto(SysteraProtos.PlayerEntry entry) {
         this.uuid = APIClient.toUUID(entry.getUuid());
         this.name = entry.getName();
         this.groups = entry.getGroupsList();
         this.settings = new Settings(this.player, entry.getSettings());
+        this.ignoreList = new ArrayList<>(entry.getPlayerIgnoreList());
     }
 
     public String getPrefix() {

@@ -3,6 +3,7 @@ package net.synchthia.systera.stream;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.settings.Settings;
 import net.synchthia.systera.util.StringUtil;
 import redis.clients.jedis.JedisPubSub;
@@ -18,22 +19,29 @@ public class ChatSubs extends JedisPubSub {
         assert stream != null;
         switch (stream.getType()) {
             case CHAT:
+                SysteraProtos.ChatEntry chatEntry = stream.getChatEntry();
                 if (!SysteraPlugin.isEnableGlobalChat()) {
                     return;
                 }
 
-                if (stream.getChatEntry().getServerName().equals(SysteraPlugin.getServerId())) {
+                if (chatEntry.getServerName().equals(SysteraPlugin.getServerId())) {
                     return;
                 }
 
+                // Format
+                String fmt = StringUtil.coloring(String.format("&7[%s]&7%s&a:&r ", chatEntry.getServerName(), chatEntry.getAuthor().getName()));
+                fmt += chatEntry.getMessage();
+
                 // Log
-                plugin.getLogger().log(Level.INFO, StringUtil.coloring(String.format("[GlobalChat] [%s]%s: %s", stream.getChatEntry().getServerName(), stream.getChatEntry().getAuthor().getName(), stream.getChatEntry().getMessage())));
+                plugin.getServer().getConsoleSender().sendMessage(String.format("[GlobalChat] %s", fmt));
 
                 // Send to Player
+                String finalFmt = fmt;
                 plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getServer().getOnlinePlayers().forEach(player -> {
-                    Settings settings = plugin.getPlayerStore().get(player.getUniqueId()).getSettings();
-                    if (settings.getGlobalChat().getValue()) {
-                        player.sendMessage(StringUtil.coloring(String.format("&7[%s]&r%s&a:&r %s", stream.getChatEntry().getServerName(), stream.getChatEntry().getAuthor().getName(), stream.getChatEntry().getMessage())));
+                    SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+                    Settings settings = sp.getSettings();
+                    if (settings.getGlobalChat().getValue() && sp.getIgnoreList().stream().noneMatch(x -> APIClient.toUUID(chatEntry.getAuthor().getUuid()).equals(APIClient.toUUID(x.getUuid())))) {
+                        player.sendMessage(finalFmt);
                     }
                 }));
 

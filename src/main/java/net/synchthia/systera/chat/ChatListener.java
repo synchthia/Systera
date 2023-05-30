@@ -1,5 +1,6 @@
 package net.synchthia.systera.chat;
 
+import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.player.SysteraPlayer;
@@ -38,14 +39,23 @@ public class ChatListener implements Listener {
         if (systeraPlayer.getSettings().getJapanize().getValue()) {
             String converted = japanize.convert(event.getMessage());
             if (!converted.isEmpty()) {
-                japanizeMsg = ChatColor.GOLD + " (" + converted + ChatColor.GOLD + ")";
+                japanizeMsg = ChatColor.GRAY + " (" + converted + ChatColor.GRAY + ")";
+            }
+        }
+
+        // イベントプレイヤーが含まれているPIを受信者から消す
+        for (Player receivePlayer : plugin.getServer().getOnlinePlayers()) {
+            for (SysteraProtos.PlayerIdentity receivePI : plugin.getPlayerStore().get(receivePlayer.getUniqueId()).getIgnoreList()) {
+                if (player.getUniqueId().equals(APIClient.toUUID(receivePI.getUuid()))) {
+                    event.getRecipients().remove(receivePlayer);
+                }
             }
         }
 
         event.setFormat(StringUtil.coloring(format) + "%2$s" + japanizeMsg);
 
         if (isGlobal) {
-            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId().toString(), player.getDisplayName()), SysteraPlugin.getServerId(), event.getMessage() + japanizeMsg).whenComplete((result, throwable) -> {
+            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId(), player.getDisplayName()), SysteraPlugin.getServerId(), event.getMessage() + japanizeMsg).whenComplete((result, throwable) -> {
                 if (throwable != null) {
                     plugin.getLogger().log(Level.WARNING, "Failed send global chat event", throwable);
                 }

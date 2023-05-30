@@ -6,6 +6,7 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
+import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.chat.Japanize;
 import net.synchthia.systera.i18n.I18n;
@@ -52,9 +53,20 @@ public class TellCommand extends BaseCommand {
         }
 
         SysteraPlayer targetSP = plugin.getPlayerStore().get(target.getUniqueId());
+
+        // Vanish
         if (!sender.hasPermission("systera.vanish") && targetSP.getSettings().getVanish().getValue()) {
             I18n.sendMessage(sender, "player.error.not_found");
             return;
+        }
+
+        // Ignored
+        if ((sender instanceof Player)) {
+            SysteraPlayer senderSP = plugin.getPlayerStore().get(((Player) sender).getUniqueId());
+            if (senderSP.getIgnoreList().stream().anyMatch(p -> APIClient.toUUID(p.getUuid()).equals(target.getUniqueId()))) {
+                I18n.sendMessage(sender, "chat.error.cant_send_to_ignoring");
+                return;
+            }
         }
 
         // Japanize
@@ -67,7 +79,15 @@ public class TellCommand extends BaseCommand {
         }
 
         I18n.sendMessage(sender, "chat.tell.send", sender.getName(), target.getName(), message);
-        I18n.sendMessage(target, "chat.tell.receive", sender.getName(), target.getName(), message);
+
+        if ((sender instanceof Player)) {
+            Player player = ((Player) sender);
+            if (targetSP.getIgnoreList().stream().noneMatch(pi -> APIClient.toUUID(pi.getUuid()).equals(player.getUniqueId()))) {
+                I18n.sendMessage(target, "chat.tell.receive", sender.getName(), target.getName(), message);
+            } else {
+                return;
+            }
+        }
 
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             if (p.hasPermission("systera.spy") && !p.getName().equals(sender.getName()) && !p.getName().equals(target.getName())) {

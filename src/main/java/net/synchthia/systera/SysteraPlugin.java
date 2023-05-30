@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.chat.ChatListener;
 import net.synchthia.systera.commands.*;
 import net.synchthia.systera.group.GroupStore;
@@ -166,6 +167,15 @@ public class SysteraPlugin extends JavaPlugin {
             return ImmutableList.of();
         });
 
+        cmdManager.getCommandCompletions().registerCompletion("ignored_players", c -> {
+            if (c.getSender() instanceof Player) {
+                Player player = c.getPlayer();
+                SysteraPlayer sp = playerStore.get(player.getUniqueId());
+                return ImmutableList.copyOf(sp.getIgnoreList().stream().map(SysteraProtos.PlayerIdentity::getName).toList());
+            }
+            return ImmutableList.of();
+        });
+
         this.cmdManager.registerCommand(new AnnounceCommand(this));
         this.cmdManager.registerCommand(new APICommand(this));
         this.cmdManager.registerCommand(new ListCommand(this));
@@ -176,6 +186,7 @@ public class SysteraPlugin extends JavaPlugin {
         this.cmdManager.registerCommand(new UnBanCommand(this));
         this.cmdManager.registerCommand(new SeenCommand(this));
         this.cmdManager.registerCommand(new TellCommand(this));
+        this.cmdManager.registerCommand(new IgnoreCommand(this));
     }
 
     @Override

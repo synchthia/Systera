@@ -6,11 +6,25 @@ general:
 chat:
   error:
     not_received: "&cYou haven't received Private message from anyone."
+    already_ignored: "&c{0} is already ignored!"
+    not_ignored: "&c{0} is not ignored!"
+    ignore: "&cFailed ignore {0}: {1}"
+    unignore: "&cFailed unignore {0}: {1}"
+    cant_mute_myself: "&cYou cannot ignore yourself"
+    ignore_empty: "&cYou are not ignoring anyone!"
+    cant_send_to_ignoring: "&cYou cannot send message to ignoring player!"
 
   tell:
     send: "&7[&6{0} &7-> &7{1}&7] &f{2}"
     receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
     spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
+
+  ignore:
+    success: "&aIgnored player: {0}"
+    title: "&bIgnored:"
+
+  unignore:
+    success: "&aUnignored player: {0}"
 
 player:
   error:
