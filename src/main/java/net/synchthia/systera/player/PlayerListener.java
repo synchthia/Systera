@@ -108,11 +108,10 @@ public class PlayerListener implements Listener {
                 if (player.getPlayer() != null) {
                     player.getPlayer().hidePlayer(plugin, targetSp.getPlayer());
                 }
-            });
-        }
+            });}
 
         if (sp.getSettings().getVanish().getValue()) {
-            plugin.getServer().getOnlinePlayers().stream().filter(p -> !p.hasPermission(sp.getSettings().getVanish().getPermission())).forEach(p -> p.hidePlayer(plugin, player));
+            sp.getSettings().getVanish().vanish(player, true);
         } else {
             plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
         }

@@ -15,6 +15,7 @@ import net.synchthia.systera.player.PlayerListener;
 import net.synchthia.systera.player.PlayerStore;
 import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.punishments.PunishAPI;
+import net.synchthia.systera.server.ServerListener;
 import net.synchthia.systera.stream.RedisClient;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -143,6 +144,7 @@ public class SysteraPlugin extends JavaPlugin {
         PluginManager pm = this.getServer().getPluginManager();
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(new ChatListener(this), this);
+        pm.registerEvents(new ServerListener(this), this);
     }
 
     private void registerCommands() {
