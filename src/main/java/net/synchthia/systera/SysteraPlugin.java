@@ -83,6 +83,7 @@ public class SysteraPlugin extends JavaPlugin {
             registerCommands();
 
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeListener(this));
 
             this.getLogger().log(Level.INFO, "Enabled: " + this.getName());
             this.started = true;
@@ -147,6 +148,12 @@ public class SysteraPlugin extends JavaPlugin {
     private void registerCommands() {
         this.cmdManager = new BukkitCommandManager(this);
 
+        cmdManager.getCommandCompletions().registerCompletion("all_and_players", c -> {
+            List<String> players = new java.util.ArrayList<>(getServer().getOnlinePlayers().stream().map(Player::getName).toList());
+            players.add("*");
+            return ImmutableList.copyOf(players);
+        });
+
         cmdManager.getCommandCompletions().registerCompletion("punish_reason", c -> ImmutableList.of(
                 "Chat Spam (チャットスパム)",
                 "Glitch (バグや不具合の意図的な不正利用)",
@@ -187,6 +194,8 @@ public class SysteraPlugin extends JavaPlugin {
         this.cmdManager.registerCommand(new SeenCommand(this));
         this.cmdManager.registerCommand(new TellCommand(this));
         this.cmdManager.registerCommand(new IgnoreCommand(this));
+        this.cmdManager.registerCommand(new RunasCommand(this));
+        this.cmdManager.registerCommand(new DispatchCommand(this));
     }
 
     @Override
@@ -194,6 +203,9 @@ public class SysteraPlugin extends JavaPlugin {
     public void onDisable() {
         apiClient.shutdown();
         redisClient.disconnect();
+
+        this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+        this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
 
         this.getLogger().log(Level.INFO, "Disabled: " + this.getName());
         this.started = false;
