@@ -23,8 +23,8 @@ chat:
     success: "&a無視しました: {0}"
     title: "&b無視リスト:"
 
-    unignore:
-      success: "&a無視を解除しました: {0}"
+  unignore:
+    success: "&a無視を解除しました: {0}"
 
 player:
   error:
