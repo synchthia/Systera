@@ -11,6 +11,7 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.chat.Japanize;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.player.SysteraPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -73,8 +74,12 @@ public class TellCommand extends BaseCommand {
         if ((sender instanceof Player) && plugin.getPlayerStore().get(((Player) sender).getUniqueId()).getSettings().getJapanize().getValue()) {
             Japanize japanize = new Japanize();
             String converted = japanize.convert(message);
+
+            // converted
             if (converted != null && !converted.isEmpty()) {
-                message = message + "§6 (" + converted + "§6)";
+                message = ChatColor.RESET + converted + ChatColor.GRAY + " (" + message + ChatColor.GRAY + ")";
+            } else {
+                message = ChatColor.RESET + message;
             }
         }
 

@@ -39,7 +39,7 @@ public class ChatListener implements Listener {
         if (systeraPlayer.getSettings().getJapanize().getValue()) {
             String converted = japanize.convert(event.getMessage());
             if (!converted.isEmpty()) {
-                japanizeMsg = ChatColor.GRAY + " (" + converted + ChatColor.GRAY + ")";
+                japanizeMsg = converted;
             }
         }
 
@@ -52,10 +52,17 @@ public class ChatListener implements Listener {
             }
         }
 
-        event.setFormat(StringUtil.coloring(format) + "%2$s" + japanizeMsg);
+        String globalFormat;
+        if (japanizeMsg.equals("")) {
+            event.setFormat(StringUtil.coloring(format) + ChatColor.RESET + "%2$s");
+            globalFormat = ChatColor.RESET + event.getMessage();
+        } else {
+            event.setFormat(StringUtil.coloring(format) + ChatColor.RESET + japanizeMsg + ChatColor.GRAY + " (%2$s" + ChatColor.GRAY + ")");
+            globalFormat = ChatColor.RESET + japanizeMsg + ChatColor.GRAY + " (" + event.getMessage() + ChatColor.GRAY + ")";
+        }
 
         if (isGlobal) {
-            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId(), player.getDisplayName()), SysteraPlugin.getServerId(), event.getMessage() + japanizeMsg).whenComplete((result, throwable) -> {
+            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId(), player.getDisplayName()), SysteraPlugin.getServerId(), globalFormat).whenComplete((result, throwable) -> {
                 if (throwable != null) {
                     plugin.getLogger().log(Level.WARNING, "Failed send global chat event", throwable);
                 }
