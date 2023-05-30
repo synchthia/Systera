@@ -54,8 +54,13 @@ public class I18nManager {
 
     @SuppressWarnings("unchecked")
     public String[] get(String language, @NonNull String key, Object... extra) {
+        language = language != null ? language : defaultLanguage;
+        
         Object object = getLanguage(language).get(key);
-        if (object == null) {
+        if (!language.equals(defaultLanguage) && object == null) {
+            return get(defaultLanguage, key, extra);
+        }
+        if (language.equals(defaultLanguage) && object == null) {
             return null;
         }
         if (object instanceof String[]) {
