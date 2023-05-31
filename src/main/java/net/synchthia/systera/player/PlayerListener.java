@@ -112,6 +112,11 @@ public class PlayerListener implements Listener {
 
         if (sp.getSettings().getVanish().getValue()) {
             sp.getSettings().getVanish().vanish(player, true);
+
+            // Re-apply vanish effect for HuskSync
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                sp.getSettings().getVanish().applyVanishEffect(player, true);
+            }, 30L);
         } else {
             plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
         }
@@ -128,10 +133,14 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
 
         event.setQuitMessage(null);
 
-        if (!plugin.getPlayerStore().get(player.getUniqueId()).getSettings().getVanish().getValue()) {
+        if (sp.getSettings().getVanish().getValue()) {
+            // Remove Effect
+            sp.getSettings().getVanish().applyVanishEffect(player, false);
+        } else {
             plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Quit> " + player.getName()));
         }
 

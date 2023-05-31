@@ -26,8 +26,7 @@ public class VanishSettings extends BaseSettings {
         player.setMetadata("vanished", new FixedMetadataValue(plugin, value));
 
         if (value) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, false));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 1, false));
+            applyVanishEffect(player, true);
 
             plugin.getServer().getOnlinePlayers().stream()
                     .filter(p -> !p.hasPermission(this.getPermission()))
@@ -35,13 +34,22 @@ public class VanishSettings extends BaseSettings {
                         p.hidePlayer(plugin, player);
                     });
         } else {
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-            player.removePotionEffect(PotionEffectType.GLOWING);
+            applyVanishEffect(player, false);
 
             plugin.getServer().getOnlinePlayers()
                     .forEach(p -> {
                         p.showPlayer(plugin, player);
                     });
+        }
+    }
+
+    public void applyVanishEffect(Player player, boolean value) {
+        if (value) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 1, false));
+        } else {
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            player.removePotionEffect(PotionEffectType.GLOWING);
         }
     }
 }
