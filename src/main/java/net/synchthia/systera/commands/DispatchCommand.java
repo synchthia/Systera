@@ -5,9 +5,8 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import net.synchthia.systera.SysteraPlugin;
-import net.synchthia.systera.util.StringUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @RequiredArgsConstructor
@@ -19,15 +18,15 @@ public class DispatchCommand extends BaseCommand {
     @Description("Dispatch commands for the specified or all servers")
 //    @CommandCompletion("")
     public void onDispatch(CommandSender sender, String target, String command) {
-        String message = StringUtil.coloring(String.format("&aDispatched: %s >> &6%s", target, command));
+        sender.sendRichMessage(String.format("<green>Dispatched: %s >> </green><gold>%s</gold>", target, command));
 
-        sender.sendMessage(message);
         plugin.getApiClient().dispatch(target, command).whenComplete((result, throwable) -> {
             if (throwable != null) {
-                sender.sendMessage(ChatColor.RED + "Failed dispatch command: ", throwable.getMessage());
+                sender.sendRichMessage("<red>Failed dispatch command: </red>");
+                sender.sendMessage(Component.text(throwable.getMessage()));
                 return;
             }
-            sender.sendMessage(ChatColor.GREEN + "Dispatch success");
+            sender.sendRichMessage("<green>Dispatch success</green>");
         });
     }
 }

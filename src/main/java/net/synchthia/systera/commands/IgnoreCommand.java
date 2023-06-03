@@ -3,12 +3,13 @@ package net.synchthia.systera.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.player.SysteraPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @CommandAlias("ignore")
@@ -20,11 +21,10 @@ public class IgnoreCommand extends BaseCommand {
 
     @Default
     public void onDefault(Player sender) {
-        sender.sendMessage(ChatColor.GOLD + "/ignore add <ID>");
-        sender.sendMessage(ChatColor.GOLD + "/ignore remove <ID>");
-        sender.sendMessage(ChatColor.GOLD + "/ignore list");
+        sender.sendRichMessage("<gold>/ignore add <ID></gold>");
+        sender.sendRichMessage("<gold>/ignore remove <ID></gold>");
+        sender.sendRichMessage("<gold>/ignore list</gold>");
     }
-
 
     @Subcommand("add")
     @CommandCompletion("@players")
@@ -54,7 +54,7 @@ public class IgnoreCommand extends BaseCommand {
 
         plugin.getPlayerStore().get(sender.getUniqueId()).ignorePlayer(targetIdentity).whenComplete((result, throwable) -> {
             if (throwable != null) {
-                I18n.sendMessage(sender, "chat.error.ignore", result, throwable.toString());
+                I18n.sendMessage(sender, "chat.error.ignore", Placeholder.unparsed("_player_name_", target), Placeholder.unparsed("_message_", throwable.toString()));
                 return;
             }
 
@@ -64,11 +64,11 @@ public class IgnoreCommand extends BaseCommand {
             }
 
             if (result.getResult().equals(SysteraProtos.CallResult.DUPLICATED)) {
-                I18n.sendMessage(sender, "chat.error.already_ignored", target);
+                I18n.sendMessage(sender, "chat.error.already_ignored", Placeholder.unparsed("_player_name_", target));
                 return;
             }
 
-            I18n.sendMessage(sender, "chat.ignore.success", result.getIdentity().getName());
+            I18n.sendMessage(sender, "chat.ignore.success", Placeholder.unparsed("_player_name_", result.getIdentity().getName()));
 
             plugin.getServer().getScheduler().runTask(plugin, () -> sp.getIgnoreList().add(result.getIdentity()));
         });
@@ -81,7 +81,7 @@ public class IgnoreCommand extends BaseCommand {
         SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
 
         if (sp.getIgnoreList().stream().noneMatch(pi -> pi.getName().equalsIgnoreCase(target))) {
-            I18n.sendMessage(sender, "chat.error.not_ignored", target);
+            I18n.sendMessage(sender, "chat.error.not_ignored", Placeholder.unparsed("_player_name_", target));
             return;
         }
 
@@ -102,7 +102,7 @@ public class IgnoreCommand extends BaseCommand {
 
         plugin.getPlayerStore().get(sender.getUniqueId()).unIgnorePlayer(targetIdentity).whenComplete((result, throwable) -> {
             if (throwable != null) {
-                I18n.sendMessage(sender, "chat.error.unignore", result, throwable.toString());
+                I18n.sendMessage(sender, "chat.error.unignore", Placeholder.unparsed("_player_name_", target), Placeholder.unparsed("_message_", throwable.toString()));
                 return;
             }
 
@@ -112,11 +112,11 @@ public class IgnoreCommand extends BaseCommand {
             }
 
             if (result.getResult().equals(SysteraProtos.CallResult.DUPLICATED)) {
-                I18n.sendMessage(sender, "chat.error.already_ignored", target);
+                I18n.sendMessage(sender, "chat.error.already_ignored", Placeholder.unparsed("_player_name_", target));
                 return;
             }
 
-            I18n.sendMessage(sender, "chat.unignore.success", result.getIdentity().getName());
+            I18n.sendMessage(sender, "chat.unignore.success", Placeholder.unparsed("_player_name_", result.getIdentity().getName()));
 
             plugin.getServer().getScheduler().runTask(plugin, () -> sp.getIgnoreList().remove(result.getIdentity()));
         });
@@ -132,6 +132,6 @@ public class IgnoreCommand extends BaseCommand {
         }
 
         I18n.sendMessage(sender, "chat.ignore.title");
-        sender.sendMessage(String.join(", ", sp.getIgnoreList().stream().map(SysteraProtos.PlayerIdentity::getName).toList()));
+        sender.sendMessage(Component.text(String.join(", ", sp.getIgnoreList().stream().map(SysteraProtos.PlayerIdentity::getName).toList())));
     }
 }

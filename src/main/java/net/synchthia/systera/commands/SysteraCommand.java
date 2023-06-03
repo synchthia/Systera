@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Subcommand;
 import lombok.RequiredArgsConstructor;
 import net.synchthia.systera.SysteraPlugin;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @CommandAlias("systera")
@@ -29,7 +28,7 @@ public class SysteraCommand extends BaseCommand {
             plugin.getApiClient().shutdown();
             plugin.getRedisClient().disconnect();
         } catch (InterruptedException e) {
-            sender.sendMessage(ChatColor.RED + "Failed shutdown api / stream");
+            sender.sendRichMessage("<red>Failed shutdown api / stream</red>");
             throw new RuntimeException(e);
         }
 
@@ -38,10 +37,10 @@ public class SysteraCommand extends BaseCommand {
             plugin.registerAPI();
             plugin.registerRedis();
         } catch (InterruptedException e) {
-            sender.sendMessage(ChatColor.RED + "Failed initialize api / stream");
+            sender.sendRichMessage("<red>Failed initialize api / stream</red>");
             throw new RuntimeException(e);
         }
-
-        sender.sendMessage(ChatColor.GREEN + "Plugin Reloaded.");
+        
+        sender.sendRichMessage("<green>Plugin Reloaded.</green>");
     }
 }

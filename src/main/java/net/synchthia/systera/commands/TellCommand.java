@@ -6,12 +6,14 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.chat.Japanize;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.player.SysteraPlayer;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -54,6 +56,7 @@ public class TellCommand extends BaseCommand {
         }
 
         SysteraPlayer targetSP = plugin.getPlayerStore().get(target.getUniqueId());
+        Component componentMessage = Component.text(message).color(NamedTextColor.WHITE);
 
         // Vanish
         if (!sender.hasPermission("systera.vanish") && targetSP.getSettings().getVanish().getValue()) {
@@ -77,18 +80,23 @@ public class TellCommand extends BaseCommand {
 
             // converted
             if (converted != null && !converted.isEmpty()) {
-                message = ChatColor.RESET + converted + ChatColor.GRAY + " (" + message + ChatColor.GRAY + ")";
-            } else {
-                message = ChatColor.RESET + message;
+                componentMessage = Component.text(converted).color(NamedTextColor.WHITE)
+                        .append(Component.text(" (" + message + ")").color(NamedTextColor.GRAY));
+
             }
         }
 
-        I18n.sendMessage(sender, "chat.tell.send", sender.getName(), target.getName(), message);
+        sender.sendMessage(
+                I18n.getComponent(sender, "chat.tell.send", Placeholder.unparsed("_player_from_", sender.getName()), Placeholder.unparsed("_player_to_", target.getName())).append(Component.space()).append(componentMessage)
+        );
+
 
         if ((sender instanceof Player)) {
             Player player = ((Player) sender);
             if (targetSP.getIgnoreList().stream().noneMatch(pi -> APIClient.toUUID(pi.getUuid()).equals(player.getUniqueId()))) {
-                I18n.sendMessage(target, "chat.tell.receive", sender.getName(), target.getName(), message);
+                sender.sendMessage(
+                        I18n.getComponent(sender, "chat.tell.receive", Placeholder.unparsed("_player_from_", sender.getName()), Placeholder.unparsed("_player_to_", target.getName())).append(Component.space()).append(componentMessage)
+                );
             } else {
                 return;
             }
@@ -96,7 +104,9 @@ public class TellCommand extends BaseCommand {
 
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             if (p.hasPermission("systera.spy") && !p.getName().equals(sender.getName()) && !p.getName().equals(target.getName())) {
-                I18n.sendMessage(p, "chat.tell.spy", sender.getName(), target.getName(), message);
+                p.sendMessage(
+                        I18n.getComponent(sender, "chat.tell.spy", Placeholder.unparsed("_player_from_", sender.getName()), Placeholder.unparsed("_player_to_", target.getName())).append(Component.space()).append(componentMessage)
+                );
             }
         }
 

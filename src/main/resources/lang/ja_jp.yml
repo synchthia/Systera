@@ -1,94 +1,94 @@
 general:
   error:
-    internal_error: "&c内部エラーが発生しました。スタッフにお知らせください。"
-    permission_denied: "&c権限がありません。"
+    internal_error: "<red>内部エラーが発生しました。スタッフにお知らせください。</red>"
+    permission_denied: "<red>この操作を行う権限がありません。</red>"
 
 chat:
   error:
-    not_received: "&c誰からもプライベートメッセージを受け取っていません。"
-    already_ignored: "&c{0}は既に無視しています！"
-    not_ignored: "&c{0}は無視していません！"
-    ignore: "&c無視リストの追加に失敗しました {0}: {1}"
-    unignore: "&c無視リストの除外に失敗しました {0}: {1}"
-    cant_mute_myself: "&c自分自身を無視することはできません"
-    ignore_empty: "&c誰も無視していません！"
-    cant_send_to_ignoring: "&c無視しているプレイヤーにメッセージは送信できません！"
+    not_received: "<red>誰からもプライベートメッセージを受け取っていません。</red>"
+    already_ignored: "<red>既に<_player_name_>は無視しています！</red>"
+    not_ignored: "<red><_player_name_>は無視していません！</red>"
+    ignore: "<red><_player_name_>を無視リストに追加できません: <_message_></red>"
+    unignore: "<red><_player_name_>を無視リストから削除できません: <_message_></red>"
+    cant_mute_myself: "<red>自分自身を無視することはできません</red>"
+    ignore_empty: "<red>誰も無視していません！</red>"
+    cant_send_to_ignoring: "<red>無視しているプレイヤー宛にメッセージは送信できません！</red>"
 
   tell:
-    send: "&7[&6{0} &7-> &7{1}&7] &f{2}"
-    receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
-    spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
+    send: "<gray>[<gold><_player_from_></gold> -> <_player_to_>]</gray>"
+    receive: "<gray>[<_player_from_> -> <gold><_player_to_></gold>]</gray>"
+    spy: "<gray>[<_player_from_> -> <_player_to_>]</gray>"
 
   ignore:
-    success: "&a無視しました: {0}"
-    title: "&b無視リスト:"
+    success: "<green>無視しました: <_player_name_></green>"
+    title: "<aqua>無視リスト:</aqua>"
 
   unignore:
-    success: "&a無視を解除しました: {0}"
+    success: "<green>無視を解除しました: <_player_name_></green>"
 
 player:
   error:
-    not_found: "&cプレイヤーが見つかりませんでした。"
-    local_profile: "&cローカルプロファイルエラーが発生しました。再ログインしてください。"
-    offline: "&c{0}はオフラインです"
+    not_found: "<red>プレイヤーが見つかりませんでした。</red>"
+    local_profile: "<red>ローカルプロファイルエラーが発生しました。再度ログインしてください。</red>"
+    offline: "<red><_player_name_>はオフラインです</red>"
 
   seen:
-    online: "&7{0}&7は&a{1}&7で&6オンライン&7です &7(最終ログイン: &3{2}&7)"
-    vanish: "&7{0}&7は&a{1}&7で&e透明状態&7です &7(最終ログイン: &3{2}&7)"
-    offline: "&7{0}&7は&cオフライン&7です &7(最終ログイン: &3{1}&7)"
+    online:  "<gray><_player_name_>は</gray><green><_server_name_></green><gray>で</gray><gold>オンライン</gold><gray>です</gray> <gray>(最終ログイン: <dark_aqua><_last_seen_></dark_aqua>)</gray>"
+    vanish:  "<gray><_player_name_>は</gray><green><_server_name_></green><gray>で</gray><yellow>透明状態</yellow><gray>です</gray> <gray>(最終ログイン: <dark_aqua><_last_seen_></dark_aqua>)</gray>"
+    offline: "<gray><_player_name_>は</gray><red>オフライン</red><gray>です</gray> <gray>(最終ログイン: <dark_aqua><_last_seen_></dark_aqua>)</gray>"
 
   settings:
     error:
-      not_found: "&c設定が見つかりません: {0}"
-      sync_failed: "&c設定の同期に失敗しました。コンソールを確認してください。"
+      not_found: "<red>設定が見つかりません: <_setting_name_></red>"
+      sync_failed: "<red>設定の同期に失敗しました。コンソールを確認してください。</red>"
 
     header: |
-      &8&l[&b&lSettings&8&l]&m-----------------------------------
-      &e使い方: /settings <設定名> <on/off>
+      <dark_gray><bold>[<aqua>Settings</aqua>]<strikethrough>-----------------------------------</strikethrough></bold></dark_gray>
+      <yellow>使い方: /settings <設定名> <on/off></yellow>
 
-    entry: "&6{0}: {1}"
-    footer: "&8&l&m--------------------------------------------"
+    entry: "<gold><_setting_name_>: <_setting_value_></gold>"
+    footer: "<dark_gray><bold><strikethrough>--------------------------------------------</strikethrough></bold><dark_gray>"
 
 punishments:
   error:
-    no_profile: "&c{0}は見つかりません！"
-    duplicate: "&c{0}は既に処罰されています！"
-    cooldown: "&c{0}の処罰期限がまだ有効です！"
+    no_profile: "<red><_player_name_>は見つかりません！</red>"
+    duplicate: "<red><_player_name_>は既に処罰されています！</red>"
+    cooldown: "<red><_player_name_>の処罰期限がまだ有効です！</red>"
 
-  notify: "&c&lPunish &7[{0}] &8> &6&l{1} &e&lは&a&l{2}&e&lとして処理されました"
-  unban: "&aBAN解除: {0}"
+  notify: "<red><bold>Punish</bold></red><dark_gray> > </dark_gray><gray>[<_punish_level_>]</gray><dark_gray> > </dark_gray><bold><gold><_player_name_></gold> <yellow>が処理されました:</yellow> <green><_reason_></green></bold>"
+  unban: "<green>BAN解除: <_player_name_></green>"
 
   dialog:
     warn: |
-      &8&m[&c&lWARNING&8&m]-----------------------------------
-      &c&l
-      &c&l*** スタッフから警告を受けました ***
-      &c&l
-      &e&l理由: &r{0}
-      &e&l
-      &8&m--------------------------------------------
+      <dark_gray><bold>[<red>WARNING</red>]<strikethrough>-----------------------------------</strikethrough></bold></dark_gray>
+      
+      <red><bold>*** スタッフから警告を受けました ***</bold></red>
+      
+      <yellow><bold>理由:</bold></yellow> <reset><_reason_></reset>
+      
+      <dark_gray><bold><strikethrough>--------------------------------------------</strikethrough></bold></dark_gray>
     kick: |
-      &c&lサーバーから強制キックされました
-      &e&l理由: &r{0}
+      <red><bold>サーバーから強制キックされました</bold></red>
+      <yellow>理由:</yellow> <reset><_reason_></reset>
     tempban: |
-      &c&l期限付きでログインが禁止されました
-      &e理由: &r{0}
-      &e日付: &e&l{1}
-      &7期限: &7&l{2}
+      <red><bold>期限付きでログインが禁止されました</bold></red>
+      <yellow>理由:</yellow> <reset><_reason_></reset>
+      <yellow>日付: <bold><_date_></bold></yellow>
+      <gray>期限: <bold><_expire_></bold></gray>
     permban: |
-      &c&l無期限でログインが禁止されました
-      &e理由: &r{0}
-      &e日付: &e&l{1}
-      &7期限: &7&l[無期限]
+      <red><bold>無期限でログインが禁止されました</bold></red>
+      <yellow>理由:</yellow> <reset><_reason_></reset>
+      <yellow>日付: <bold><_date_></bold></yellow>
+      <gray>期限: <bold>[無期限]</bold></gray>
 
 report:
   thanks: |
-    &eご報告ありがとうございます。スタッフがまもなく対応します。
-    &c注意: このコマンドは報告用です。
-  notify: "&9&lReport &7[{0}] &8> &6{1} &6-> &6{2} &8> &a{3}"
+    <yellow>ご報告ありがとうございます。スタッフがまもなく対応します。</yellow>
+    <red>注意: このコマンドは通報用です。</red>
+  notify: "<blue><bold>Report</bold></blue><dark_gray> > </dark_gray><gray>[<_server_name_>]</gray><dark_gray> > </dark_gray><gold><_player_from_> -> <_player_to_></gold><dark_gray> > </dark_gray><green><_message_></green>"
 
 vanish:
-  notify: "&e* 透明状態です！"
+  notify: "<yellow>* 透明状態が有効です！</yellow>"
 
 whitelist:
-  notify: "&a* ホワイトリストが有効です！"
+  notify: "<green>* ホワイトリストが有効です！</green>"

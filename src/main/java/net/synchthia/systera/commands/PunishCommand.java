@@ -1,12 +1,14 @@
 package net.synchthia.systera.commands;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.util.DateUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class PunishCommand extends BaseCommand {
             Long expire = DateUtil.getEpochMilliTime() + DateUtil.parseDateString(expireDate);
             plugin.getPunishAPI().punish(false, SysteraProtos.PunishLevel.TEMPBAN, sender, target, reason, expire);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(ChatColor.RED + "Invalid Expire Date!");
+            sender.sendRichMessage("<red>Invalid expire date!</red>");
         }
     }
 

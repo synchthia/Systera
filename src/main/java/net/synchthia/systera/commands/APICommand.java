@@ -6,6 +6,9 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Subcommand;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.group.Group;
@@ -95,6 +98,7 @@ public class APICommand extends BaseCommand {
         sender.sendMessage("Name: " + player.getName());
         sender.sendMessage("DisplayName: " + player.getDisplayName());
         sender.sendMessage("Locale: " + player.getLocale());
+        sender.sendMessage(Component.text("Locale: " + player.locale()));
 
         sender.sendMessage(" --- ");
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
@@ -118,5 +122,12 @@ public class APICommand extends BaseCommand {
         } catch (RuntimeException e) {
 
         }
+    }
+
+    @Subcommand("msg")
+    public void onMsg(CommandSender sender, String message) {
+        sender.sendRichMessage(message);
+        sender.sendMessage(MiniMessage.miniMessage().deserialize(message, Placeholder.unparsed("test", "Yo"), Placeholder.unparsed("test", "waa")));
+
     }
 }

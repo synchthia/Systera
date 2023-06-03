@@ -1,6 +1,8 @@
 package net.synchthia.systera.player;
 
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
@@ -98,7 +100,7 @@ public class SysteraPlayer {
         this.ignoreList = new ArrayList<>(entry.getPlayerIgnoreList());
     }
 
-    public String getPrefix() {
+    public Component getPrefix() {
         Group group;
         if (groups.size() >= 2) {
             group = plugin.getGroupStore().get(groups.get(1));
@@ -107,9 +109,9 @@ public class SysteraPlayer {
         }
 
         if (group != null) {
-            return group.getPrefix();
+            return MiniMessage.miniMessage().deserialize(group.getPrefix());
         } else {
-            return "";
+            return Component.empty();
         }
     }
 
@@ -121,7 +123,7 @@ public class SysteraPlayer {
     public void applyPermissionsByGroup() {
         refreshAttachment();
 
-        player.setPlayerListName(getPrefix() + player.getName());
+        player.playerListName(getPrefix().append(Component.text(player.getName())));
 
         plugin.getLogger().log(Level.INFO, String.format("[%s] Group: %s", player.getName(), this.groups));
 

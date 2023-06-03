@@ -2,7 +2,6 @@ package net.synchthia.systera.announce;
 
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.util.StringUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
@@ -42,9 +41,9 @@ public class Announce extends BukkitRunnable {
     }
 
     public void sendAnnounce() {
-        player.sendMessage(ChatColor.GRAY + "----------------------------------");
+        player.sendRichMessage("<gray>----------------------------------</gray>");
         player.sendMessage(StringUtil.coloring(this.rawMessage));
-        player.sendMessage(ChatColor.GRAY + "----------------------------------");
+        player.sendRichMessage("<gray>----------------------------------</gray>");
         this.runTaskTimerAsynchronously(SysteraPlugin.getInstance(), 0L, 3L);
     }
 

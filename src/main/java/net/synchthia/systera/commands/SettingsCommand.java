@@ -3,12 +3,14 @@ package net.synchthia.systera.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.settings.BaseSettings;
 import net.synchthia.systera.settings.Settings;
-import net.synchthia.systera.util.StringUtil;
 import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class SettingsCommand extends BaseCommand {
     @Description("Show / Set player settings")
     public void onSettings(Player player, @Optional String name, @Optional String value) {
         if (plugin.getPlayerStore().get(player.getUniqueId()) == null) {
-            player.sendMessage(I18n.get(player, "player.error.local_profile"));
+            I18n.sendMessage(player, "player.error.local_profile");
             return;
         }
 
@@ -43,7 +45,7 @@ public class SettingsCommand extends BaseCommand {
         if (name != null) {
             BaseSettings k = settings.getSettings().get(name.toLowerCase());
             if (!settings.getSettings().containsKey(name.toLowerCase()) || !k.hasPermission(player)) {
-                I18n.sendMessage(player, "player.settings.error.not_found", name.toLowerCase());
+                I18n.sendMessage(player, "player.settings.error.not_found", Placeholder.unparsed("_setting_name_", name.toLowerCase()));
                 return;
             }
 
@@ -68,12 +70,11 @@ public class SettingsCommand extends BaseCommand {
     }
 
     private void showStatus(Player player, String key, boolean value) {
-        String status = StringUtil.coloring("&cOFF");
-        if (value) {
-            status = StringUtil.coloring("&aON");
-        }
+        Component status = value ?
+                Component.text("ON").color(NamedTextColor.GREEN) :
+                Component.text("OFF").color(NamedTextColor.RED);
 
-        I18n.sendMessage(player, "player.settings.entry", key, status);
+        I18n.sendMessage(player, "player.settings.entry", Placeholder.unparsed("_setting_name_", key), Placeholder.component("_setting_value_", status));
     }
 
     private boolean parseValue(String value) {

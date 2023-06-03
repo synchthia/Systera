@@ -1,9 +1,11 @@
 package net.synchthia.systera.player;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,10 +22,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 public class PlayerListener implements Listener {
-    private static final String ERROR_INTERRUPTED = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_INTERRUPTED]";
-    private static final String ERROR_EXECUTION = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_EXECUTION]";
-    private static final String ERROR_TIMEOUT = ChatColor.RED + "Currently not available: " + ChatColor.GRAY + "[ERR_TIMEOUT]";
-    private static final String ERROR_LOOKUP = ChatColor.RED + "Currently not Available: " + ChatColor.GRAY + "[LOOKUP_ERROR]";
+    private static final Component ERROR_INTERRUPTED = MiniMessage.miniMessage().deserialize("<red>Currently not available:</red> <gray>[ERR_INTERRUPTED]</gray>");
+    private static final Component ERROR_EXECUTION = MiniMessage.miniMessage().deserialize("<red>Currently not available:</red> <gray>[ERR_EXECUTION]</gray>");
+    private static final Component ERROR_TIMEOUT = MiniMessage.miniMessage().deserialize("<red>Currently not available:</red> <gray>[ERR_TIMEOUT]</gray>");
+    private static final Component ERROR_LOOKUP = MiniMessage.miniMessage().deserialize("<red>Currently not Available:</red> <gray>[LOOKUP_ERROR]</gray>");
+
     private final SysteraPlugin plugin;
 
     public PlayerListener(SysteraPlugin plugin) {
@@ -33,7 +36,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (!plugin.isStarted()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Server is Starting...");
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Server is Starting..."));
         }
     }
 
@@ -84,18 +87,18 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        event.setJoinMessage(null);
+        event.joinMessage(Component.empty());
 
         // Whitelist
         if (player.hasPermission("minecraft.command.whitelist") && plugin.getServer().hasWhitelist()) {
-            player.sendMessage(I18n.get(player, "whitelist.notify"));
+            I18n.sendMessage(player, "whitelist.notify");
         }
 
         // Vanish
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
         if (player.hasPermission(sp.getSettings().getVanish().getPermission())) {
             if (sp.getSettings().getVanish().getValue()) {
-                player.sendMessage(I18n.get(player, "vanish.notify"));
+                I18n.sendMessage(player, "vanish.notify");
             }
         } else {
             // Force disable vanish when removed perms
@@ -108,7 +111,8 @@ public class PlayerListener implements Listener {
                 if (player.getPlayer() != null) {
                     player.getPlayer().hidePlayer(plugin, targetSp.getPlayer());
                 }
-            });}
+            });
+        }
 
         if (sp.getSettings().getVanish().getValue()) {
             sp.getSettings().getVanish().vanish(player, true);
@@ -118,7 +122,9 @@ public class PlayerListener implements Listener {
                 sp.getSettings().getVanish().applyVanishEffect(player, true);
             }, 30L);
         } else {
-            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Join> " + player.getName()));
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p ->
+                    p.getPlayer().sendMessage(Component.text("Join> " + player.getName()).color(NamedTextColor.GRAY))
+            );
         }
 
         // Current server
@@ -135,13 +141,15 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
 
-        event.setQuitMessage(null);
+        event.quitMessage(Component.empty());
 
         if (sp.getSettings().getVanish().getValue()) {
             // Remove Effect
             sp.getSettings().getVanish().applyVanishEffect(player, false);
         } else {
-            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p -> p.getPlayer().sendMessage(ChatColor.GRAY + "Quit> " + player.getName()));
+            plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p ->
+                    p.getPlayer().sendMessage(Component.text("Quit> " + player.getName()).color(NamedTextColor.GRAY))
+            );
         }
 
         // Current server

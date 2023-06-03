@@ -6,9 +6,10 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 @RequiredArgsConstructor
@@ -22,11 +23,12 @@ public class UnBanCommand extends BaseCommand {
     public void onUnBan(CommandSender sender, String target) {
         plugin.getPunishAPI().unBan(target).whenComplete((result, throwable) -> {
             if (throwable != null) {
-                sender.sendMessage(ChatColor.RED + "Failed unban player: " + throwable);
+                sender.sendRichMessage("<red>Failed unban player:</red>");
+                sender.sendMessage(Component.text(throwable.toString()));
                 return;
             }
 
-            I18n.sendMessage(sender, "punishments.unban", target);
+            I18n.sendMessage(sender, "punishments.unban", Placeholder.unparsed("_player_name_", target));
         });
     }
 }

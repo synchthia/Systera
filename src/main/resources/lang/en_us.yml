@@ -1,94 +1,94 @@
 general:
   error:
-    internal_error: "&cAn internal error has occurred. Please contact the staff."
-    permission_denied: "&cYou don''t have permission to do this."
+    internal_error: "<red>An internal error has occurred. Please contact the staff.</red>"
+    permission_denied: "<red>You don''t have permission to do this.</red>"
 
 chat:
   error:
-    not_received: "&cYou haven''t received Private message from anyone."
-    already_ignored: "&c{0} is already ignored!"
-    not_ignored: "&c{0} is not ignored!"
-    ignore: "&cFailed ignore {0}: {1}"
-    unignore: "&cFailed unignore {0}: {1}"
-    cant_mute_myself: "&cYou cannot ignore yourself"
-    ignore_empty: "&cYou are not ignoring anyone!"
-    cant_send_to_ignoring: "&cYou cannot send message to ignoring player!"
+    not_received: "<red>You haven''t received Private message from anyone.</red>"
+    already_ignored: "<red><_player_name_> is already ignored!</red>"
+    not_ignored: "<red><_player_name_> is not ignored!</red>"
+    ignore: "<red>Failed ignore <_player_name_>: <_message_></red>"
+    unignore: "<red>Failed unignore <_player_name_>: <_message_></red>"
+    cant_mute_myself: "<red>You cannot ignore yourself</red>"
+    ignore_empty: "<red>You are not ignoring anyone!</red>"
+    cant_send_to_ignoring: "<red>You cannot send message to ignoring player!</red>"
 
   tell:
-    send: "&7[&6{0} &7-> &7{1}&7] &f{2}"
-    receive: "&7[&7{0} &7-> &6{1}&7] &f{2}"
-    spy: "&7[&7{0} &7-> &7{1}&7] &f{2}"
+    send: "<gray>[<gold><_player_from_></gold> -> <_player_to_>]</gray>"
+    receive: "<gray>[<_player_from_> -> <gold><_player_to_></gold>]</gray>"
+    spy: "<gray>[<_player_from_> -> <_player_to_>]</gray>"
 
   ignore:
-    success: "&aIgnored player: {0}"
-    title: "&bIgnored:"
+    success: "<green>Ignored player: <_player_name_></green>"
+    title: "<aqua>Ignored:</aqua>"
 
   unignore:
-    success: "&aUnignored player: {0}"
+    success: "<green>Unignored player: <_player_name_></green>"
 
 player:
   error:
-    not_found: "&cPlayer not found."
-    local_profile: "&cLocal profile error. Please re-login."
-    offline: "&cPlayer is offline: {0}"
+    not_found: "<red>Player not found.</red>"
+    local_profile: "<red>Local profile error. Please re-login.</red>"
+    offline: "<red>Player is offline: <_player_name_></red>"
 
   seen:
-    online: "&7{0} &7is &6online &7on &a{1} &7since &3{2}"
-    vanish: "&7{0} &7is &evanish &7on &a{1} &7since &3{2}"
-    offline: "&7{0} &7is &coffline &7since &3{1}"
+    online:  "<gray><_player_name_> is </gray><gold>online</gold><gray> on </gray><green><_server_name_></green><gray> since </gray><dark_aqua><_last_seen_></dark_aqua>"
+    vanish:  "<gray><_player_name_> is </gray><yellow>vanish</yellow><gray> on </gray><green><_server_name_></green><gray> since </gray><dark_aqua><_last_seen_></dark_aqua>"
+    offline: "<gray><_player_name_> is </gray><red>offline</red><gray> since </gray><dark_aqua><_last_seen_></dark_aqua>"
 
   settings:
     error:
-      not_found: "&cSettings not found: {0}"
-      sync_failed: "&cFailed sync settings. Please see console."
+      not_found: "<red>Settings not found: <_setting_name_></red>"
+      sync_failed: "<red>Failed sync settings. Please see console.</red>"
 
     header: |
-      &8&l[&b&lSettings&8&l]&m-----------------------------------
-      &eUsage: /settings <name> <on/off>
+      <dark_gray><bold>[<aqua>Settings</aqua>]<strikethrough>-----------------------------------</strikethrough></bold></dark_gray>
+      <yellow>Usage: /settings <name> <on/off></yellow>
 
-    entry: "&6{0}: {1}"
-    footer: "&8&l&m--------------------------------------------"
+    entry: "<gold><_setting_name_>: <_setting_value_></gold>"
+    footer: "<dark_gray><bold><strikethrough>--------------------------------------------</strikethrough></bold><dark_gray>"
 
 punishments:
   error:
-    no_profile: "&c{0} is not found!"
-    duplicate: "&c{0} is already punished!"
-    cooldown: "&c{0}'''s Temporary BAN is not expired!"
+    no_profile: "<red><_player_name_> is not found!</red>"
+    duplicate: "<red><_player_name_> is already punished!</red>"
+    cooldown: "<red><_player_name_>''s Temporary BAN is not expired!</red>"
 
-  notify: "&c&lPunish &7[{0}] &8> &6&l{1} &e&lwas punished for: &a&l{2}"
-  unban: "&aUnbanned: {0}"
+  notify: "<red><bold>Punish</bold></red><dark_gray> > </dark_gray><gray>[<_punish_level_>]</gray><dark_gray> > </dark_gray><bold><gold><_player_name_></gold> <yellow>was punished for:</yellow> <green><_reason_></green></bold>"
+  unban: "<green>Unbanned: <_player_name_></green>"
 
   dialog:
     warn: |
-      &8&m[&c&lWARNING&8&m]-----------------------------------
-      &c&l
-      &c&l*** You have been WARNED! ***
-      &c&l
-      &e&lReason: &r{0}
-      &e&l
-      &8&m--------------------------------------------
+      <dark_gray><bold>[<red>WARNING</red>]<strikethrough>-----------------------------------</strikethrough></bold></dark_gray>
+      
+      <red><bold>*** You have been WARNED! ***</bold></red>
+      
+      <yellow><bold>Reason:</bold></yellow> <reset><_reason_></reset>
+      
+      <dark_gray><bold><strikethrough>--------------------------------------------</strikethrough></bold></dark_gray>
     kick: |
-      &c&lYou are Kicked from this server!
-      &e&lReason: &r{0}
+      <red><bold>You are Kicked from this server!</bold></red>
+      <yellow>Reason:</yellow> <reset><_reason_></reset>
     tempban: |
-      &c&lYou are Temporary Banned from this server!
-      &eReason: &r{0}
-      &eDate: &e&l{1}
-      &7Expire: &7&l{2}
+      <red><bold>You are Temporary Banned from this server!</bold></red>
+      <yellow>Reason:</yellow> <reset><_reason_></reset>
+      <yellow>Date: <bold><_date_></bold></yellow>
+      <gray>Expire: <bold><_expire_></bold></gray>
     permban: |
-      &c&lYou are Permanently Banned from this server!
-      &eReason: &r{0}
-      &eDate: &e&l{1}
-      &7Expire: &7&l[FOREVER]
+      <red><bold>You are Permanently Banned from this server!</bold></red>
+      <yellow>Reason:</yellow> <reset><_reason_></reset>
+      <yellow>Date: <bold><_date_></bold></yellow>
+      <gray>Expire: <bold>[FOREVER]</bold></gray>
 
 report:
   thanks: |
-    &eThank you for your report. Staff will support shortly.
-    &cNote: This command Emergency Only. Do not Spamming this command.
-  notify: "&9&lReport &7[{0}] &8> &6{1} &6-> &6{2} &8> &a{3}"
+    <yellow>Thank you for your report. Staff will support shortly.</yellow>
+    <red>Note: This command Emergency Only. Do not Spamming this command.</red>
+  notify: "<blue><bold>Report</bold></blue><dark_gray> > </dark_gray><gray>[<_server_name_>]</gray><dark_gray> > </dark_gray><gold><_player_from_> -> <_player_to_></gold><dark_gray> > </dark_gray><green><_message_></green>"
 
 vanish:
-  notify: "&e* Vanish enabled!"
+  notify: "<yellow>* Vanish enabled!</yellow>"
 
 whitelist:
-  notify: "&a* Whitelist enabled!"
+  notify: "<green>* Whitelist enabled!</green>"

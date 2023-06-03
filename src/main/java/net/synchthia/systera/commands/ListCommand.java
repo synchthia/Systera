@@ -5,10 +5,11 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.settings.VanishSettings;
-import net.synchthia.systera.util.StringUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,7 @@ public class ListCommand extends BaseCommand {
     @CommandPermission("systera.command.list")
     @Description("List online players")
     public void onList(CommandSender sender) {
-        List<String> players = plugin.getServer().getOnlinePlayers().stream().filter(p -> {
+        List<Component> players = plugin.getServer().getOnlinePlayers().stream().filter(p -> {
             VanishSettings vanish = plugin.getPlayerStore().get(p.getUniqueId()).getSettings().getVanish();
             if (sender.hasPermission(vanish.getPermission())) {
                 return true;
@@ -33,13 +34,14 @@ public class ListCommand extends BaseCommand {
         }).map(p -> {
             VanishSettings vanish = plugin.getPlayerStore().get(p.getUniqueId()).getSettings().getVanish();
             if (vanish.getValue()) {
-                return StringUtil.coloring("&e[Vanish]&r" + p.getDisplayName());
+                return Component.text("[Vanish]").color(NamedTextColor.YELLOW)
+                        .append(p.displayName());
             } else {
-                return p.getName();
+                return p.displayName();
             }
         }).toList();
 
-        sender.sendMessage(StringUtil.coloring("&bOnline &6(" + players.size() + "/" + Bukkit.getMaxPlayers() + ")"));
-        sender.sendMessage(String.join(", ", players));
+        sender.sendRichMessage(String.format("<aqua>Online</aqua> <gold>(%d/%d)</gold>", players.size(), plugin.getServer().getMaxPlayers()));
+        sender.sendMessage(Component.join(JoinConfiguration.commas(true), players));
     }
 }

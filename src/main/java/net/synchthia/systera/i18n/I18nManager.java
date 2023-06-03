@@ -5,7 +5,9 @@ import com.google.common.base.Joiner;
 import lombok.Cleanup;
 import lombok.Data;
 import lombok.NonNull;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,14 +30,14 @@ public class I18nManager {
 
     private static final Charset ENCODE = Charsets.UTF_8;
     private static final String EXTENSION = ".yml";
-    private static final String DEFAULT_MESSAGES_FILENAME = "en_us" + EXTENSION;
+    private static final String DEFAULT_MESSAGES_FILENAME = toLocaleString(Locale.US) + EXTENSION;
     private static final String LANG_DIRNAME = "lang/";
 
     private final JavaPlugin plugin;
     private final Map<String, Configuration> languages = new HashMap<>();
     @NonNull
     private Configuration defaultMessages;
-    private String defaultLanguage = "en_us";
+    private Locale defaultLanguage = Locale.US;
 
     public I18nManager(@NonNull JavaPlugin plugin) throws IOException, InvalidConfigurationException {
         this.plugin = plugin;
@@ -46,21 +48,20 @@ public class I18nManager {
 
     private String[] format(String[] base, Object... extra) {
         for (int i = 0; i < base.length; i++) {
-            base[i] = ChatColor.translateAlternateColorCodes('&', base[i]);
             base[i] = MessageFormat.format(base[i], extra);
         }
         return base;
     }
 
     @SuppressWarnings("unchecked")
-    public String[] get(String language, @NonNull String key, Object... extra) {
+    public String[] get(Locale language, @NonNull String key, Object... extra) {
         language = language != null ? language : defaultLanguage;
-        
+
         Object object = getLanguage(language).get(key);
-        if (!language.equals(defaultLanguage) && object == null) {
+        if (language != null && !language.equals(defaultLanguage) && object == null) {
             return get(defaultLanguage, key, extra);
         }
-        if (language.equals(defaultLanguage) && object == null) {
+        if (language != null && language.equals(defaultLanguage) && object == null) {
             return null;
         }
         if (object instanceof String[]) {
@@ -72,13 +73,13 @@ public class I18nManager {
         return format(object.toString().split("\n"), extra);
     }
 
-    public Configuration getLanguage(String languageName) {
+    public Configuration getLanguage(Locale language) {
         Configuration configuration = null;
-        if (languageName != null) {
-            configuration = languages.get(languageName);
+        if (language != null) {
+            configuration = languages.get(toLocaleString(language));
         }
         if (configuration == null && defaultLanguage != null) {
-            configuration = languages.get(defaultLanguage);
+            configuration = languages.get(toLocaleString(defaultLanguage));
         }
         if (configuration == null) {
             configuration = defaultMessages;
@@ -86,14 +87,9 @@ public class I18nManager {
         return configuration;
     }
 
-    public List<String> getList(String language, @NonNull String key, Object... extra) {
-        String[] array = get(language, key, extra);
-        return array == null ? null : Arrays.asList(array);
-    }
-
-    public String getString(String language, @NonNull String key, Object... extra) {
-        String[] array = get(language, key, extra);
-        return array == null ? null : Joiner.on('\n').join(array);
+    public Component getComponent(Locale language, @NonNull String key, TagResolver... resolvers) {
+        String[] array = get(language, key);
+        return array == null ? null : MiniMessage.miniMessage().deserialize(Joiner.on('\n').join(array), resolvers);
     }
 
     private void loadDefaultMessages() throws IOException, InvalidConfigurationException {
@@ -124,8 +120,12 @@ public class I18nManager {
             languages.put(languageName, configuration);
         }
 
-        if (!languages.containsKey(defaultLanguage)) {
+        if (!languages.containsKey(toLocaleString(defaultLanguage))) {
             defaultLanguage = null;
         }
+    }
+
+    public static String toLocaleString(Locale locale) {
+        return (locale.getLanguage() + "_" + locale.getCountry()).toLowerCase();
     }
 }
