@@ -96,13 +96,17 @@ public class PlayerListener implements Listener {
 
         // Vanish
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        boolean isVanish = sp.getSettings().getVanish().getValue();
+
         if (player.hasPermission(sp.getSettings().getVanish().getPermission())) {
-            if (sp.getSettings().getVanish().getValue()) {
+            if (isVanish) {
                 I18n.sendMessage(player, "vanish.notify");
             }
+
+            runVanishTask(sp, isVanish);
         } else {
-            // Force disable vanish when removed perms
-            if (sp.getSettings().getVanish().getValue()) {
+            if (isVanish) {
+                // Force disable vanish when removed perms
                 sp.getSettings().getVanish().setValue(player, false);
             }
 
@@ -114,14 +118,7 @@ public class PlayerListener implements Listener {
             });
         }
 
-        if (sp.getSettings().getVanish().getValue()) {
-            sp.getSettings().getVanish().vanish(player, true);
-
-            // Re-apply vanish effect for HuskSync
-            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                sp.getSettings().getVanish().applyVanishEffect(player, true);
-            }, 30L);
-        } else {
+        if (!isVanish) {
             plugin.getPlayerStore().list().stream().filter(p -> p.getSettings().getJoinMessage().getValue()).forEach(p ->
                     p.getPlayer().sendMessage(Component.text("Join> " + player.getName()).color(NamedTextColor.GRAY))
             );
@@ -161,5 +158,15 @@ public class PlayerListener implements Listener {
         }));
 
         plugin.getPlayerStore().remove(player.getUniqueId());
+    }
+
+    private void runVanishTask(SysteraPlayer sp, boolean isVanish) {
+        Player player = sp.getPlayer();
+        sp.getSettings().getVanish().setValue(player, isVanish);
+
+        // Re-apply vanish effect for HuskSync
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            sp.getSettings().getVanish().setValue(player, sp.getSettings().getVanish().getValue());
+        }, 30L);
     }
 }

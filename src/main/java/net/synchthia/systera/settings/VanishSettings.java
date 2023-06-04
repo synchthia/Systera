@@ -3,8 +3,6 @@ package net.synchthia.systera.settings;
 import net.synchthia.systera.SysteraPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class VanishSettings extends BaseSettings {
     public VanishSettings(boolean value) {
@@ -23,9 +21,9 @@ public class VanishSettings extends BaseSettings {
         player.setSleepingIgnored(value);
         player.setCanPickupItems(!value);
         player.setSilent(value);
-        player.setMetadata("vanished", new FixedMetadataValue(plugin, value));
 
         if (value) {
+            player.setMetadata("vanished", new FixedMetadataValue(plugin, true));
             applyVanishEffect(player, true);
 
             plugin.getServer().getOnlinePlayers().stream()
@@ -34,6 +32,7 @@ public class VanishSettings extends BaseSettings {
                         p.hidePlayer(plugin, player);
                     });
         } else {
+            player.setMetadata("vanished", new FixedMetadataValue(plugin, false));
             applyVanishEffect(player, false);
 
             plugin.getServer().getOnlinePlayers()
@@ -44,12 +43,7 @@ public class VanishSettings extends BaseSettings {
     }
 
     public void applyVanishEffect(Player player, boolean value) {
-        if (value) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, PotionEffect.INFINITE_DURATION, 1, false));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 1, false));
-        } else {
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-            player.removePotionEffect(PotionEffectType.GLOWING);
-        }
+        player.setInvisible(value);
+        player.setGlowing(value);
     }
 }
