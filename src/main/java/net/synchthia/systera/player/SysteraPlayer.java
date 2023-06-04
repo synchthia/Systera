@@ -90,6 +90,14 @@ public class SysteraPlayer {
         });
     }
 
+    public CompletableFuture<SysteraProtos.Empty> syncSettings() {
+        SysteraProtos.PlayerSettings proto = this.getSettings().toProto();
+        return plugin.getApiClient().setPlayerSettings(player.getUniqueId(), proto).whenComplete(((res, throwable) -> {
+            if (throwable != null) {
+                plugin.getLogger().log(Level.WARNING, "Failed sync player settings: ", throwable);
+            }
+        }));
+    }
 
     // TODO: to static method?
     private void fromProto(SysteraProtos.PlayerEntry entry) {

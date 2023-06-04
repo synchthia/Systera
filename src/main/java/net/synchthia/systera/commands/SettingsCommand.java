@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
+import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.settings.BaseSettings;
 import net.synchthia.systera.settings.Settings;
 import org.bukkit.entity.Player;
@@ -27,7 +27,8 @@ public class SettingsCommand extends BaseCommand {
             return;
         }
 
-        Settings settings = plugin.getPlayerStore().get(player.getUniqueId()).getSettings();
+        SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        Settings settings = sp.getSettings();
 
         // Show all settings
         if (name == null && value == null) {
@@ -59,14 +60,30 @@ public class SettingsCommand extends BaseCommand {
             k.setValue(player, parseValue(value));
 
             // Sync to API
-            SysteraProtos.PlayerSettings proto = settings.toProto();
-            plugin.getApiClient().setPlayerSettings(player.getUniqueId(), proto).whenComplete(((r, th) -> {
-                if (th != null) {
+            sp.syncSettings().whenComplete((res, throwable) -> {
+                if (throwable != null) {
                     I18n.sendMessage(player, "player.settings.error.sync_failed");
-                    th.printStackTrace();
                 }
-            }));
+            });
         }
+    }
+
+    @CommandAlias("vanish|v")
+    @CommandPermission("systera.vanish")
+    @Description("Hidden from player")
+    public void onVanish(Player sender) {
+        SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
+        boolean value = !sp.getSettings().getVanish().getValue();
+        sp.getSettings().getVanish().setValue(sender, value);
+
+        showStatus(sender, "vanish", value);
+
+        // Sync to API
+        sp.syncSettings().whenComplete((res, throwable) -> {
+            if (throwable != null) {
+                I18n.sendMessage(sender, "player.settings.error.sync_failed");
+            }
+        });
     }
 
     private void showStatus(Player player, String key, boolean value) {
