@@ -2,8 +2,9 @@ package net.synchthia.systera.chat;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
@@ -13,7 +14,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import java.util.List;
 import java.util.logging.Level;
+
+import static net.synchthia.systera.messages.ChatMessage.*;
 
 public class ChatListener implements Listener {
     private final SysteraPlugin plugin;
@@ -24,20 +28,6 @@ public class ChatListener implements Listener {
         this.japanize = new Japanize();
     }
 
-//    @EventHandler
-//    public void onDebugChat(AsyncChatEvent event) {
-//        Player player = event.getPlayer();
-//
-//        plugin.getServer().getConsoleSender().sendMessage(event.message());
-//
-////        event.message(Component.empty()
-////                .append(player.name())
-////                .append(Component.text(": "))
-////                .append(event.originalMessage()));
-//
-//        event.renderer((source, sourceDisplayName, message, viewer) -> event.message());
-//    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
@@ -46,33 +36,20 @@ public class ChatListener implements Listener {
 
         event.message(Component.empty());
 
-        Component format = Component.empty();
+        // Placeholders
+        List<TagResolver> resolvers = getChatFormatResolvers(
+                // Channel
+                SysteraPlugin.isEnableGlobalChat() ? (isGlobal ? SysteraPlugin.getServerId() : "local") : "",
 
-        // Server Name
-        if (SysteraPlugin.isEnableGlobalChat()) {
-            if (isGlobal) {
-                format = format.append(Component
-                        .text(String.format("[%s]", SysteraPlugin.getServerId()))
-                        .color(NamedTextColor.GRAY)
-                );
-            } else {
-                format = format.append(Component
-                        .text("[local]")
-                        .color(NamedTextColor.DARK_GRAY)
-                );
-            }
-        }
+                MiniMessage.miniMessage().serialize(systeraPlayer.getPrefix()),
 
-        // Player Name
-        format = format.append(player.displayName())
-                .color(NamedTextColor.GRAY);
+                // Player Name
+                MiniMessage.miniMessage().serialize(player.displayName()));
 
-        // Colon
-        format = format.append(Component.text(": "))
-                .color(NamedTextColor.GREEN)
-                .append(Component.empty())
-                .color(NamedTextColor.WHITE);
+        // Message
+        resolvers.add(Placeholder.unparsed("original_message", event.signedMessage().message()));
 
+        // Japanize
         String japanizeMsg = "";
         if (systeraPlayer.getSettings().getJapanize().getValue()) {
             String converted = japanize.convert(event.signedMessage().message());
@@ -80,6 +57,8 @@ public class ChatListener implements Listener {
                 japanizeMsg = converted;
             }
         }
+
+        resolvers.add(Placeholder.unparsed("japanize_message", japanizeMsg));
 
         // イベントプレイヤーが含まれているPIを受信者から消す
         for (Player receivePlayer : plugin.getServer().getOnlinePlayers()) {
@@ -90,24 +69,24 @@ public class ChatListener implements Listener {
             }
         }
 
-        String globalFormat;
-        Component localFormat;
-        if (japanizeMsg.equals("")) {
-            localFormat = format.append(event.originalMessage());
-            globalFormat = MiniMessage.miniMessage().serialize(event.originalMessage());
-        } else {
-            localFormat = format
-                    .append(Component.text(japanizeMsg))
-                    .append(Component.text(" (" + event.signedMessage().message() + ")").color(NamedTextColor.GRAY));
-            globalFormat = MiniMessage.miniMessage().serialize(Component
-                    .text(japanizeMsg)
-                    .append(Component.text(" (" + event.signedMessage().message() + ")").color(NamedTextColor.GRAY)));
-        }
+        // Component
+        final Component localFormat = japanizeMsg.equals("") ?
+                // Default
+                MiniMessage.miniMessage().deserialize(CHAT_FORMAT + DEFAULT_MESSAGE_FORMAT, TagResolver.resolver(resolvers)) :
+                // Japanize
+                MiniMessage.miniMessage().deserialize(CHAT_FORMAT + JAPANIZE_MESSAGE_FORMAT, TagResolver.resolver(resolvers));
+
+        final Component globalFormat = japanizeMsg.equals("") ?
+                // Default
+                MiniMessage.miniMessage().deserialize(DEFAULT_MESSAGE_FORMAT, TagResolver.resolver(resolvers)) :
+                // Japanize
+                MiniMessage.miniMessage().deserialize(JAPANIZE_MESSAGE_FORMAT, TagResolver.resolver(resolvers));
+
 
         event.renderer((source, sourceDisplayName, message, viewer) -> localFormat);
 
         if (isGlobal) {
-            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId(), MiniMessage.miniMessage().serialize(player.displayName())), SysteraPlugin.getServerId(), globalFormat).whenComplete((result, throwable) -> {
+            plugin.getApiClient().chat(APIClient.buildPlayerIdentity(player.getUniqueId(), MiniMessage.miniMessage().serialize(player.displayName())), SysteraPlugin.getServerId(), MiniMessage.miniMessage().serialize(globalFormat)).whenComplete((result, throwable) -> {
                 if (throwable != null) {
                     plugin.getLogger().log(Level.WARNING, "Failed send global chat event", throwable);
                 }

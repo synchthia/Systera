@@ -1,15 +1,20 @@
 package net.synchthia.systera.stream;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.APIClient;
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.messages.ChatMessage;
 import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.settings.Settings;
-import net.synchthia.systera.util.StringUtil;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.List;
 import java.util.logging.Level;
+
+import static net.synchthia.systera.messages.ChatMessage.CHAT_FORMAT;
 
 public class ChatSubs extends JedisPubSub {
     private static final SysteraPlugin plugin = SysteraPlugin.getInstance();
@@ -29,20 +34,21 @@ public class ChatSubs extends JedisPubSub {
                     return;
                 }
 
+                // Resolvers
+                List<TagResolver> resolvers = ChatMessage.getChatFormatResolvers(chatEntry.getServerName(), "", chatEntry.getAuthor().getName());
+
                 // Format
-                String fmt = StringUtil.coloring(String.format("&7[%s]&7%s&a:&r ", chatEntry.getServerName(), chatEntry.getAuthor().getName()));
-                fmt += chatEntry.getMessage();
+                Component globalFormat = MiniMessage.miniMessage().deserialize(CHAT_FORMAT + chatEntry.getMessage(), TagResolver.resolver(resolvers));
 
                 // Log
-                plugin.getServer().getConsoleSender().sendMessage(String.format("[GlobalChat] %s", fmt));
+                plugin.getServer().getConsoleSender().sendMessage(Component.text("[GLOBAL_CHAT]").appendSpace().append(globalFormat));
 
                 // Send to Player
-                String finalFmt = fmt;
                 plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getServer().getOnlinePlayers().forEach(player -> {
                     SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
                     Settings settings = sp.getSettings();
                     if (settings.getGlobalChat().getValue() && sp.getIgnoreList().stream().noneMatch(x -> APIClient.toUUID(chatEntry.getAuthor().getUuid()).equals(APIClient.toUUID(x.getUuid())))) {
-                        player.sendMessage(Component.text(finalFmt));
+                        player.sendMessage(globalFormat);
                     }
                 }));
 
