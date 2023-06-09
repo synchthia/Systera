@@ -109,7 +109,7 @@ public class SysteraPlugin extends JavaPlugin {
             }
         }
 
-        getLogger().log(Level.INFO, "Redis Address: " + redisAddress);
+        getLogger().log(Level.INFO, "Redis Address: " + hostname + ":" + port);
         redisClient = new RedisClient(SysteraPlugin.getServerId(), hostname, port);
     }
 
