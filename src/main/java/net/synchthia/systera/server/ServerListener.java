@@ -1,6 +1,7 @@
 package net.synchthia.systera.server;
 
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.player.SysteraPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +22,12 @@ public class ServerListener implements Listener {
         Iterator<Player> iterator = event.iterator();
         while (iterator.hasNext()) {
             Player player = iterator.next();
-            if (plugin.getPlayerStore().get(player.getUniqueId()).getSettings().getVanish().getValue()) {
+            SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+            if (sp == null) {
+                continue;
+            }
+            
+            if (sp.getSettings().getVanish().getValue()) {
                 iterator.remove();
             }
         }
