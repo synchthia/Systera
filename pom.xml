@@ -17,7 +17,7 @@
         <bukkit.plugin.name>Systera</bukkit.plugin.name>
         <bukkit.plugin.main>net.synchthia.systera.SysteraPlugin</bukkit.plugin.main>
         <bukkit.plugin.authors>Synchthia Crew</bukkit.plugin.authors>
-        <bukkit.plugin.api-version>1.19</bukkit.plugin.api-version>
+        <bukkit.plugin.api-version>1.20</bukkit.plugin.api-version>
     </properties>
 
     <repositories>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

@@ -95,6 +95,8 @@ public class APICommand extends BaseCommand {
             return;
         }
 
+        sender.sendMessage(player.hasMetadata("vanished") ? "vanish metadata" : "non vanish metadata");
+
         sender.sendMessage("Name: " + player.getName());
         sender.sendMessage("DisplayName: " + player.getDisplayName());
         sender.sendMessage("Locale: " + player.getLocale());
