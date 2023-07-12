@@ -33,7 +33,7 @@ public class RunasCommand extends BaseCommand {
         } else {
             Player player = plugin.getServer().getPlayer(target);
             if (player == null) {
-                I18n.sendMessage(sender, "player.error.offline", Placeholder.unparsed("_player_name", target));
+                I18n.sendMessage(sender, "player.error.offline", Placeholder.unparsed("_player_name_", target));
                 return;
             }
 
