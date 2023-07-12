@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.synchthia.systera.SysteraPlugin;
+import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.settings.VanishSettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,12 +33,13 @@ public class ListCommand extends BaseCommand {
                 return !vanish.getValue() || (senderPlayer != null && senderPlayer.canSee(p));
             }
         }).map(p -> {
-            VanishSettings vanish = plugin.getPlayerStore().get(p.getUniqueId()).getSettings().getVanish();
+            SysteraPlayer sp = plugin.getPlayerStore().get(p.getUniqueId());
+            VanishSettings vanish = sp.getSettings().getVanish();
             if (vanish.getValue()) {
                 return Component.text("[Vanish]").color(NamedTextColor.YELLOW)
                         .append(p.displayName());
             } else {
-                return p.displayName();
+                return sp.getPrefix().append(p.displayName());
             }
         }).toList();
 

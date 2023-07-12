@@ -2,7 +2,6 @@ package net.synchthia.systera.group;
 
 import lombok.Data;
 import net.synchthia.api.systera.SysteraProtos;
-import net.synchthia.systera.util.StringUtil;
 
 import java.util.List;
 
@@ -22,9 +21,5 @@ public class Group {
 
     public static Group fromProto(SysteraProtos.GroupEntry entry) {
         return new Group(entry.getGroupName(), entry.getGroupPrefix(), entry.getGlobalPermsList(), entry.getServerPermsList());
-    }
-
-    public String getPrefix() {
-        return StringUtil.coloring(prefix);
     }
 }
