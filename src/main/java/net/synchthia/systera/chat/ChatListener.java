@@ -11,7 +11,6 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.player.SysteraPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class ChatListener implements Listener {
         this.japanize = new Japanize();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
     public void onPlayerChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         SysteraPlayer systeraPlayer = plugin.getPlayerStore().get(player.getUniqueId());
