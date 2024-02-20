@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 env:
   MVN_REPO_SERVER_ID: "startail-public"
