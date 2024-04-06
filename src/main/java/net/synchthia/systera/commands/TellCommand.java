@@ -94,7 +94,7 @@ public class TellCommand extends BaseCommand {
         if ((sender instanceof Player)) {
             Player player = ((Player) sender);
             if (targetSP.getIgnoreList().stream().noneMatch(pi -> APIClient.toUUID(pi.getUuid()).equals(player.getUniqueId()))) {
-                sender.sendMessage(
+                target.sendMessage(
                         I18n.getComponent(sender, "chat.tell.receive", Placeholder.unparsed("_player_from_", sender.getName()), Placeholder.unparsed("_player_to_", target.getName())).append(Component.space()).append(componentMessage)
                 );
             } else {
