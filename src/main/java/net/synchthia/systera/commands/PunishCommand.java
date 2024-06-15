@@ -1,41 +1,37 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.util.DateUtil;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 @RequiredArgsConstructor
-public class PunishCommand extends BaseCommand {
+public class PunishCommand {
     private final SysteraPlugin plugin;
 
-    @CommandAlias("warn")
-    @CommandPermission("systera.command.punishment")
-    @CommandCompletion("@players @punish_reason")
-    @Description("Warning Command")
-    public void onWarn(CommandSender sender, String target, String reason) {
+    @Command("warn <target> <reason>")
+    @Permission("systera.command.punishment")
+    @CommandDescription("Warning Command")
+    public void onWarn(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "reason", suggestions = "punish_reason") String reason) {
         plugin.getPunishAPI().punish(false, SysteraProtos.PunishLevel.WARN, sender, target, reason, 0L);
     }
 
-    @CommandAlias("kick")
-    @CommandPermission("systera.command.punishment")
-    @CommandCompletion("@players @punish_reason")
-    @Description("Kick Command")
-    public void onKick(CommandSender sender, String target, String reason) {
+    @Command("kick <target> <reason>")
+    @Permission("systera.command.punishment")
+    @CommandDescription("Kick Command")
+    public void onKick(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "reason", suggestions = "punish_reason") String reason) {
         plugin.getPunishAPI().punish(false, SysteraProtos.PunishLevel.KICK, sender, target, reason, 0L);
     }
 
-    @CommandAlias("tempban|tban|punish")
-    @CommandPermission("systera.command.punishment")
-    @CommandCompletion("@players @punish_reason")
-    @Description("Temporary BAN Command")
-    public void onTempBan(CommandSender sender, String target, String reason) {
+    @Command("tempban|tban|punish <target> <reason>")
+    @Permission("systera.command.punishment")
+    @CommandDescription("Temporary BAN Command")
+    public void onTempBan(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "reason", suggestions = "punish_reason") String reason) {
 //        String expireDate = args.hasFlag('t') ? args.getFlag('t') : "7d";
         String expireDate = "7d";
 
@@ -47,11 +43,10 @@ public class PunishCommand extends BaseCommand {
         }
     }
 
-    @CommandAlias("ban|permban|pban|ppunish")
-    @CommandPermission("systera.command.punishment")
-    @CommandCompletion("@players @punish_reason")
-    @Description("Permanently BAN Command")
-    public void onPermBan(CommandSender sender, String target, String reason) {
+    @Command("ban|permban|pban|ppunish <target> <reason>")
+    @Permission("systera.command.punishment")
+    @CommandDescription("Permanently BAN Command")
+    public void onPermBan(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "reason", suggestions = "punish_reason") String reason) {
         plugin.getPunishAPI().punish(true, SysteraProtos.PunishLevel.PERMBAN, sender, target, reason, 0L);
     }
 }

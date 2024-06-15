@@ -1,36 +1,35 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.announce.Announce;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotation.specifier.Greedy;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 @RequiredArgsConstructor
-public class AnnounceCommand extends BaseCommand {
+public class AnnounceCommand {
     private final SysteraPlugin plugin;
 
-    @CommandAlias("announce")
-    @CommandPermission("systera.command.announce")
-    @Description("Announce in Bossbar")
-    public void onAnnounce(CommandSender sender, String message) {
+    @Command("announce <message>")
+    @Permission("systera.command.announce")
+    @CommandDescription("Announce in Bossbar")
+    public void onAnnounce(CommandSender sender, @Argument("message") @Greedy String message) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Announce task = new Announce(player, message);
             task.sendAnnounce();
         }
     }
 
-    @CommandAlias("chime")
-    @CommandPermission("systera.command.announce")
-    @CommandCompletion("on|off")
-    @Description("Announce chime")
-    public void onChime(CommandSender sender, String status) {
+    @Command("chime <status>")
+    @Permission("systera.command.announce")
+    @CommandDescription("Announce chime")
+    public void onChime(CommandSender sender, @Argument(value = "status", suggestions = "on_off") String status) {
         if (status.equals("on")) {
             for (Player p : plugin.getServer().getOnlinePlayers()) {
                 p.playSound(p, Sound.BLOCK_NOTE_BLOCK_PLING, 2.0F, 1);

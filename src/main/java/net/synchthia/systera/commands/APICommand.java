@@ -1,14 +1,7 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Subcommand;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.synchthia.api.systera.SysteraProtos;
 import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.group.Group;
@@ -18,31 +11,35 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.Permission;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@CommandAlias("api")
-@CommandPermission("systera.command.api")
 @RequiredArgsConstructor
-public class APICommand extends BaseCommand {
+public class APICommand {
     private final SysteraPlugin plugin;
 
-    @Subcommand("whoami")
+    @Command("api whoami")
+    @Permission("systera.command.api")
     public void onWhoami(Player player) {
         if (!player.getAddress().isUnresolved()) {
             player.sendMessage(player.getAddress().getAddress().getHostAddress());
         }
     }
 
-    @Subcommand("playerstore")
+    @Command("api playerstore")
+    @Permission("systera.command.api")
     public void onPlayerStore(CommandSender sender) {
         int storeSize = this.plugin.getPlayerStore().size();
         sender.sendMessage("Store Size: " + storeSize);
     }
 
-    @Subcommand("groupstore")
+    @Command("api groupstore")
+    @Permission("systera.command.api")
     public void onGroupStore(CommandSender sender) {
         SysteraPlayer sp = plugin.getPlayerStore().get(plugin.getServer().getPlayer(sender.getName()).getUniqueId());
         int size = this.plugin.getGroupStore().size();
@@ -58,7 +55,8 @@ public class APICommand extends BaseCommand {
         });
     }
 
-    @Subcommand("perms")
+    @Command("api perms")
+    @Permission("systera.command.api")
     public void onPerms(Player player) {
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
         player.sendMessage("# Current Permissions (Local):");
@@ -71,16 +69,17 @@ public class APICommand extends BaseCommand {
         });
     }
 
-    @Subcommand("removeattachments")
+    @Command("api removeattachments")
+    @Permission("systera.command.api")
     public void onRemoveAttachments(Player player) {
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
 //        sp.removeAttachments();
         sp.refreshAttachment();
     }
 
-    @Subcommand("player")
-    @CommandCompletion("@players")
-    public void onPlayer(CommandSender sender, String target) {
+    @Command("api player <target>")
+    @Permission("systera.command.api")
+    public void onPlayer(CommandSender sender, @Argument(value = "target", suggestions = "players") String target) {
         OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(target);
         if (offlinePlayer == null) {
             sender.sendMessage(ChatColor.RED + "Player not found");
@@ -110,9 +109,9 @@ public class APICommand extends BaseCommand {
 
     }
 
-    @Subcommand("getpi")
-    @CommandCompletion("@players")
-    public void onGetPI(CommandSender sender, String target) {
+    @Command("api getpi <target>")
+    @Permission("systera.command.api")
+    public void onGetPI(CommandSender sender, @Argument(value = "target", suggestions = "players") String target) {
         try {
             SysteraProtos.GetPlayerIdentityByNameResponse pi = plugin.getApiClient().getPlayerIdentity(target).get(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -124,12 +123,5 @@ public class APICommand extends BaseCommand {
         } catch (RuntimeException e) {
 
         }
-    }
-
-    @Subcommand("msg")
-    public void onMsg(CommandSender sender, String message) {
-        sender.sendRichMessage(message);
-        sender.sendMessage(MiniMessage.miniMessage().deserialize(message, Placeholder.unparsed("test", "Yo"), Placeholder.unparsed("test", "waa")));
-
     }
 }

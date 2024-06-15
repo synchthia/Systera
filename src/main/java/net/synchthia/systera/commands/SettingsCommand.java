@@ -1,7 +1,5 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -12,16 +10,19 @@ import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.settings.BaseSettings;
 import net.synchthia.systera.settings.Settings;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 @RequiredArgsConstructor
-public class SettingsCommand extends BaseCommand {
+public class SettingsCommand {
     private final SysteraPlugin plugin;
 
-    @CommandAlias("settings|setting|set")
-    @CommandPermission("systera.command.settings")
-    @CommandCompletion("@player_settings on|off")
-    @Description("Show / Set player settings")
-    public void onSettings(Player player, @Optional String name, @Optional String value) {
+    @Command("settings|setting|set [name] [value]")
+    @Permission("systera.command.settings")
+    @CommandDescription("Show / Set player settings")
+    public void onSettings(Player player, @Argument(value = "name", suggestions = "player_settings") String name, @Argument(value = "value", suggestions = "on_off") String value) {
         if (plugin.getPlayerStore().get(player.getUniqueId()) == null) {
             I18n.sendMessage(player, "player.error.local_profile");
             return;
@@ -68,9 +69,9 @@ public class SettingsCommand extends BaseCommand {
         }
     }
 
-    @CommandAlias("vanish|v")
-    @CommandPermission("systera.vanish")
-    @Description("Hidden from player")
+    @Command("vanish|v")
+    @Permission("systera.vanish")
+    @CommandDescription("Hidden from player")
     public void onVanish(Player sender) {
         SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
         boolean value = !sp.getSettings().getVanish().getValue();

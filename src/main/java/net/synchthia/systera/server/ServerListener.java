@@ -26,7 +26,7 @@ public class ServerListener implements Listener {
             if (sp == null) {
                 continue;
             }
-            
+
             if (sp.getSettings().getVanish().getValue()) {
                 iterator.remove();
             }

@@ -1,11 +1,11 @@
-name: ${bukkit.plugin.name}
-version: ${project.version}-${git.branch}-${git.commit.id.abbrev}
-api-version: "${bukkit.plugin.api-version}"
-author: ${bukkit.plugin.authors}
-description: ${project.description}
+name: ${pluginName}
+version: ${pluginVersion}
+api-version: "${bukkitApiVersion}"
+author: ${authors}
+description: ${description}
 
-main: ${bukkit.plugin.main}
-website: ${project.url}
+main: ${bukkitPluginMain}
+website: ${website}
 
 softdepend: [ProtocolLib]
 

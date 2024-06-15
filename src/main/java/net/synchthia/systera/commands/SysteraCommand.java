@@ -1,27 +1,26 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Subcommand;
 import lombok.RequiredArgsConstructor;
 import net.synchthia.systera.SysteraPlugin;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
-@CommandAlias("systera")
-@CommandPermission("systera.command.systera")
-@Description("Systera command")
 @RequiredArgsConstructor
-public class SysteraCommand extends BaseCommand {
+public class SysteraCommand {
     private final SysteraPlugin plugin;
 
+    @Command("systera")
+    @Permission("systera.command.systera")
+    @CommandDescription("Systera command")
     public void onSystera(CommandSender sender) {
 
     }
 
-    @Subcommand("reload")
-    @CommandPermission("systera.command.reload")
+    @Command("systera reload")
+    @Permission("systera.command.systera")
+    @CommandDescription("Systera command")
     public void onReload(CommandSender sender) {
         // Disconnect
         try {
@@ -40,7 +39,7 @@ public class SysteraCommand extends BaseCommand {
             sender.sendRichMessage("<red>Failed initialize api / stream</red>");
             throw new RuntimeException(e);
         }
-        
+
         sender.sendRichMessage("<green>Plugin Reloaded.</green>");
     }
 }

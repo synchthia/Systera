@@ -1,10 +1,5 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,16 +12,20 @@ import net.synchthia.systera.player.SysteraPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.incendo.cloud.annotation.specifier.Greedy;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 @RequiredArgsConstructor
-public class TellCommand extends BaseCommand {
+public class TellCommand {
     private final SysteraPlugin plugin;
 
-    @CommandAlias("tell|msg|message|pm|privatemessage|w|whisper")
-    @CommandPermission("systera.command.tell")
-    @CommandCompletion("@players")
-    @Description("Tell Command")
-    public void onTell(CommandSender sender, String target, String message) {
+    @Command("tell|msg|message|pm|privatemessage|w|whisper <target> <message>")
+    @Permission("systera.command.tell")
+    @CommandDescription("Tell Command")
+    public void onTell(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument("message") @Greedy String message) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         if (targetPlayer == null) {
             I18n.sendMessage(sender, "player.error.not_found");
@@ -36,10 +35,10 @@ public class TellCommand extends BaseCommand {
         sendTellMsg(sender, targetPlayer, message);
     }
 
-    @CommandAlias("reply|r")
-    @CommandPermission("systera.command.tell")
-    @Description("Reply Command")
-    public void onReply(Player sender, String message) {
+    @Command("reply|r <message>")
+    @Permission("systera.command.tell")
+    @CommandDescription("Reply Command")
+    public void onReply(Player sender, @Argument("message") @Greedy String message) {
         if (!sender.hasMetadata("reply")) {
             I18n.sendMessage(sender, "chat.error.not_received");
             return;
@@ -91,8 +90,7 @@ public class TellCommand extends BaseCommand {
         );
 
 
-        if ((sender instanceof Player)) {
-            Player player = ((Player) sender);
+        if ((sender instanceof Player player)) {
             if (targetSP.getIgnoreList().stream().noneMatch(pi -> APIClient.toUUID(pi.getUuid()).equals(player.getUniqueId()))) {
                 target.sendMessage(
                         I18n.getComponent(sender, "chat.tell.receive", Placeholder.unparsed("_player_from_", sender.getName()), Placeholder.unparsed("_player_to_", target.getName())).append(Component.space()).append(componentMessage)

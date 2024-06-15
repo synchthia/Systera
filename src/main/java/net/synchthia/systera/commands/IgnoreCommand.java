@@ -1,7 +1,5 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -11,24 +9,28 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import net.synchthia.systera.player.SysteraPlayer;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
-@CommandAlias("ignore")
-@CommandPermission("systera.command.ignore")
-@Description("Block chat & private messages from the specified player")
 @RequiredArgsConstructor
-public class IgnoreCommand extends BaseCommand {
+public class IgnoreCommand {
     private final SysteraPlugin plugin;
 
-    @Default
+    @Command("ignore")
+    @Permission("systera.command.ignore")
+    @CommandDescription("Block chat & private messages from the specified player")
     public void onDefault(Player sender) {
         sender.sendRichMessage("<gold>/ignore add <ID></gold>");
         sender.sendRichMessage("<gold>/ignore remove <ID></gold>");
         sender.sendRichMessage("<gold>/ignore list</gold>");
     }
 
-    @Subcommand("add")
-    @CommandCompletion("@players")
-    public void onAdd(Player sender, String target) {
+    @Command("ignore add <target>")
+    @Permission("systera.command.ignore")
+    @CommandDescription("Block chat & private messages from the specified player")
+    public void onAdd(Player sender, @Argument(value = "target", suggestions = "players") String target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
 
@@ -74,9 +76,10 @@ public class IgnoreCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("remove")
-    @CommandCompletion("@ignored_players")
-    public void onRemove(Player sender, String target) {
+    @Command("ignore remove <target>")
+    @Permission("systera.command.ignore")
+    @CommandDescription("Block chat & private messages from the specified player")
+    public void onRemove(Player sender, @Argument(value = "target", suggestions = "ignored_players") String target) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
         SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
 
@@ -122,7 +125,9 @@ public class IgnoreCommand extends BaseCommand {
         });
     }
 
-    @Subcommand("list")
+    @Command("ignore list")
+    @Permission("systera.command.ignore")
+    @CommandDescription("Block chat & private messages from the specified player")
     public void onList(Player sender) {
         SysteraPlayer sp = plugin.getPlayerStore().get(sender.getUniqueId());
 

@@ -2,7 +2,6 @@ package net.synchthia.systera;
 
 import com.google.protobuf.util.JsonFormat;
 import io.grpc.ManagedChannel;
-import io.grpc.internal.DnsNameResolverProvider;
 import io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.NonNull;
@@ -26,7 +25,7 @@ public class APIClient {
     private final SysteraGrpc.SysteraBlockingStub blockingStub;
 
     public APIClient(@NonNull String target) {
-        channel = NettyChannelBuilder.forTarget(target).usePlaintext().nameResolverFactory(new DnsNameResolverProvider()).build();
+        channel = NettyChannelBuilder.forTarget(target).usePlaintext().build();
         stub = SysteraGrpc.newStub(channel);
         blockingStub = SysteraGrpc.newBlockingStub(channel);
     }

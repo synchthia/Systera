@@ -1,10 +1,5 @@
 package net.synchthia.systera.commands;
 
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.CommandCompletion;
-import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Description;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,16 +9,19 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotations.Argument;
+import org.incendo.cloud.annotations.Command;
+import org.incendo.cloud.annotations.CommandDescription;
+import org.incendo.cloud.annotations.Permission;
 
 @RequiredArgsConstructor
-public class RunasCommand extends BaseCommand {
+public class RunasCommand {
     private final SysteraPlugin plugin;
 
-    @CommandAlias("runas|sudo")
-    @CommandPermission("systera.command.runas")
-    @Description("Make another user perform a command")
-    @CommandCompletion("@all_and_players")
-    public void onRunas(CommandSender sender, String target, String command) {
+    @Command("runas|sudo <target> <command>")
+    @Permission("systera.command.runas")
+    @CommandDescription("Make another user perform a command")
+    public void onRunas(CommandSender sender, @Argument(value = "target", suggestions = "all_and_players") String target, String command) {
         if (target.equals("*")) {
             sender.sendMessage(
                     MiniMessage.miniMessage().deserialize("<green>Run as </green><gold>everyone</gold><green>: </green>")
