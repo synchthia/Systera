@@ -169,7 +169,7 @@ public class SysteraPlugin extends JavaPlugin {
         this.annotationParser.parse(
                 new CommandSuggestions(this),
                 new AnnounceCommand(this),
-                new AnnounceCommand(this),
+                new APICommand(this),
                 new DispatchCommand(this),
                 new IgnoreCommand(this),
                 new ListCommand(this),
