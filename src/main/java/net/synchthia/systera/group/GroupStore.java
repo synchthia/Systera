@@ -37,7 +37,7 @@ public class GroupStore {
     }
 
     public CompletableFuture<SysteraProtos.FetchGroupsResponse> fetch() {
-        return plugin.getApiClient().fetchGroups(SysteraPlugin.getServerId()).whenComplete((res, throwable) -> {
+        return plugin.getApiClient().fetchGroups().whenComplete((res, throwable) -> {
             if (throwable != null) {
                 plugin.getLogger().log(Level.WARNING, "Failed fetch group: ", throwable);
                 return;

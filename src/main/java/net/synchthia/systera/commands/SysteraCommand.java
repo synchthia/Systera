@@ -12,10 +12,9 @@ public class SysteraCommand {
     private final SysteraPlugin plugin;
 
     @Command("systera")
-    @Permission("systera.command.systera")
     @CommandDescription("Systera command")
     public void onSystera(CommandSender sender) {
-
+        sender.sendRichMessage("<gray>Systera</gray>");
     }
 
     @Command("systera reload")

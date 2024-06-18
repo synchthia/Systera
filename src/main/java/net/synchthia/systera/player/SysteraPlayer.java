@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -140,8 +141,11 @@ public class SysteraPlayer {
 
         this.groups.stream().map(groupName -> plugin.getGroupStore().get(groupName)).forEach(group -> {
             if (group != null) {
-                applyPermissions(group.getGlobalPerms());
-                applyPermissions(group.getServerPerms());
+                applyPermissions(Arrays.stream(group.getPermissions().get("global")).toList());
+                String[] serverPerms = group.getPermissions().get(SysteraPlugin.getServerId());
+                if (serverPerms != null) {
+                    applyPermissions(Arrays.stream(serverPerms).toList());
+                }
             } else {
                 plugin.getLogger().log(Level.WARNING, "Group is null");
             }

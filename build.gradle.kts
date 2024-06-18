@@ -107,7 +107,6 @@ tasks {
         reloc("redis.clients")
         reloc("org.apache.commons")
         reloc("com.google.protobuf")
-        reloc("com.google.common")
         reloc("org.apache.commons.pool2")
     }
 
