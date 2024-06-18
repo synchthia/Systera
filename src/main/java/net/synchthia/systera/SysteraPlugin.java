@@ -16,7 +16,6 @@ import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.punishments.PunishAPI;
 import net.synchthia.systera.server.ServerListener;
 import net.synchthia.systera.stream.RedisClient;
-import net.synchthia.systera.tablist.TabListModule;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -75,10 +74,6 @@ public class SysteraPlugin extends JavaPlugin {
     private AnnotationParser<CommandSender> annotationParser;
     private LegacyPaperCommandManager<CommandSender> commandManager;
 
-    // TabList
-    @Getter
-    private TabListModule tabListModule;
-
     @Override
     public void onEnable() {
         try {
@@ -97,9 +92,6 @@ public class SysteraPlugin extends JavaPlugin {
             registerCommands();
 
             this.protocolManager = ProtocolLibrary.getProtocolManager();
-
-            this.tabListModule = new TabListModule(this);
-            tabListModule.setup();
 
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeListener(this));
@@ -207,8 +199,6 @@ public class SysteraPlugin extends JavaPlugin {
 
         this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
-
-        tabListModule.release();
 
         this.getLogger().log(Level.INFO, "Disabled: " + this.getName());
         this.started = false;
