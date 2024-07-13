@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.synchthia.systera.SysteraPlugin;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.annotation.specifier.Greedy;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -16,7 +17,7 @@ public class DispatchCommand {
     @Command("dispatch <target> <command>")
     @Permission("systera.command.dispatch")
     @CommandDescription("Dispatch commands for the specified or all servers")
-    public void onDispatch(CommandSender sender, @Argument("target") String target, @Argument("command") String command) {
+    public void onDispatch(CommandSender sender, @Argument("target") String target, @Argument("command") @Greedy String command) {
         sender.sendRichMessage(String.format("<green>Dispatched: %s >> </green><gold>%s</gold>", target, command));
 
         plugin.getApiClient().dispatch(target, command).whenComplete((result, throwable) -> {

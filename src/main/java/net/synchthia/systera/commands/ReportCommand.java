@@ -5,6 +5,7 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotation.specifier.Greedy;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -20,7 +21,7 @@ public class ReportCommand {
     @Command("report|modreq|sos|helpop <target> <message>")
     @Permission("systera.command.report")
     @CommandDescription("Report to Staff")
-    public void onReport(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "message", suggestions = "punish_reason") String message) {
+    public void onReport(CommandSender sender, @Argument(value = "target", suggestions = "players") String target, @Argument(value = "message", suggestions = "punish_reason") @Greedy String message) {
         Player targetPlayer = plugin.getServer().getPlayer(target);
 
         UUID toUUID = targetPlayer != null ? targetPlayer.getUniqueId() : null;

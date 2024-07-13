@@ -9,6 +9,7 @@ import net.synchthia.systera.SysteraPlugin;
 import net.synchthia.systera.i18n.I18n;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.annotation.specifier.Greedy;
 import org.incendo.cloud.annotations.Argument;
 import org.incendo.cloud.annotations.Command;
 import org.incendo.cloud.annotations.CommandDescription;
@@ -21,7 +22,7 @@ public class RunasCommand {
     @Command("runas|sudo <target> <command>")
     @Permission("systera.command.runas")
     @CommandDescription("Make another user perform a command")
-    public void onRunas(CommandSender sender, @Argument(value = "target", suggestions = "all_and_players") String target, String command) {
+    public void onRunas(CommandSender sender, @Argument(value = "target", suggestions = "all_and_players") String target, @Argument("command") @Greedy String command) {
         if (target.equals("*")) {
             sender.sendMessage(
                     MiniMessage.miniMessage().deserialize("<green>Run as </green><gold>everyone</gold><green>: </green>")
