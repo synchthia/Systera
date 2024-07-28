@@ -1,13 +1,16 @@
 plugins {
     id("java")
     id("maven-publish")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+
+    // use for Java 21 (see: https://github.com/johnrengelman/shadow/pull/876)
+    // id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.github.goooler.shadow") version "8.1.8"
     id("io.papermc.paperweight.userdev") version "1.7.1" // Check for new versions at https://plugins.gradle.org/plugin/io.papermc.paperweight.userdev
     id("xyz.jpenilla.run-paper") version "2.3.0" // Adds runServer and runMojangMappedServer tasks for testing
 }
 
 group = "net.synchthia"
-version = "1.0-SNAPSHOT"
+version = "1.21-SNAPSHOT"
 description = "Systera"
 
 java {
@@ -53,7 +56,7 @@ dependencies {
     implementation("net.synchthia:systera-api:1.1-SNAPSHOT")
 
     // Paper
-    paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
 
     // Adventure
     implementation("net.kyori:adventure-api:4.17.0")
@@ -85,7 +88,7 @@ dependencies {
     implementation("commons-configuration:commons-configuration:1.10")
 
     // gson
-    compileOnly("com.google.code.gson:gson:2.8.9")
+    compileOnly("com.google.code.gson:gson:2.11.0")
 
     // lombok
     compileOnly("org.projectlombok:lombok:1.18.32")
@@ -97,7 +100,7 @@ tasks {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
     }
 
     shadowJar {
@@ -126,7 +129,7 @@ tasks {
                 "description" to project.description,
                 "authors" to "SYNCHTHIA",
                 "website" to "https://synchthia.net",
-                "bukkitApiVersion" to 1.20,
+                "bukkitApiVersion" to "1.20",
                 "bukkitPluginMain" to "net.synchthia.systera.SysteraPlugin"
             )
         )
