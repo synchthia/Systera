@@ -131,6 +131,9 @@ public class PlayerListener implements Listener {
                 throwable.printStackTrace();
             }
         }));
+
+        // Tab List
+        plugin.getTabList().sendHeaderFooter(player);
     }
 
     @EventHandler

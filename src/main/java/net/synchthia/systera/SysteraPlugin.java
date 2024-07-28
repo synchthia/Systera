@@ -16,6 +16,7 @@ import net.synchthia.systera.player.SysteraPlayer;
 import net.synchthia.systera.punishments.PunishAPI;
 import net.synchthia.systera.server.ServerListener;
 import net.synchthia.systera.stream.RedisClient;
+import net.synchthia.systera.tablist.TabList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -43,6 +44,12 @@ public class SysteraPlugin extends JavaPlugin {
 
     @Getter
     private final static boolean enableGlobalChat = System.getenv("SYSTERA_GLOBAL_CHAT") != null && Boolean.parseBoolean(System.getenv("SYSTERA_GLOBAL_CHAT"));
+
+    @Getter
+    private final static String tabListHeader = System.getenv("TABLIST_HEADER") != null ? System.getenv("TABLIST_HEADER") : "";
+
+    @Getter
+    private final static String tabListFooter = System.getenv("TABLIST_FOOTER") != null ? System.getenv("TABLIST_FOOTER") : "";
 
     @Getter
     private static SysteraPlugin instance;
@@ -74,6 +81,10 @@ public class SysteraPlugin extends JavaPlugin {
     private AnnotationParser<CommandSender> annotationParser;
     private LegacyPaperCommandManager<CommandSender> commandManager;
 
+    // Tab List
+    @Getter
+    private TabList tabList;
+
     @Override
     public void onEnable() {
         try {
@@ -95,6 +106,8 @@ public class SysteraPlugin extends JavaPlugin {
 
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeListener(this));
+
+            this.tabList = new TabList(this, tabListHeader, tabListFooter);
 
             this.getLogger().log(Level.INFO, "Enabled: " + this.getName());
             this.started = true;
