@@ -46,13 +46,10 @@ public class SysteraPlugin extends JavaPlugin {
     private final static boolean enableGlobalChat = System.getenv("SYSTERA_GLOBAL_CHAT") != null && Boolean.parseBoolean(System.getenv("SYSTERA_GLOBAL_CHAT"));
 
     @Getter
-    private final static String tabListHeader = System.getenv("TABLIST_HEADER") != null ? System.getenv("TABLIST_HEADER") : "";
-
-    @Getter
-    private final static String tabListFooter = System.getenv("TABLIST_FOOTER") != null ? System.getenv("TABLIST_FOOTER") : "";
-
-    @Getter
     private static SysteraPlugin instance;
+
+    @Getter
+    private PluginConfig pluginConfig;
 
     @Getter
     @Setter
@@ -94,6 +91,8 @@ public class SysteraPlugin extends JavaPlugin {
                 getDataFolder().mkdir();
             }
 
+            this.pluginConfig = new PluginConfig(this);
+
             I18n.setI18nManager(new I18nManager(this));
 
             registerRedis();
@@ -107,7 +106,7 @@ public class SysteraPlugin extends JavaPlugin {
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeListener(this));
 
-            this.tabList = new TabList(this, tabListHeader, tabListFooter);
+            this.tabList = new TabList(this, getPluginConfig().getTabListHeader(), getPluginConfig().getTabListFooter());
 
             this.getLogger().log(Level.INFO, "Enabled: " + this.getName());
             this.started = true;

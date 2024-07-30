@@ -16,11 +16,13 @@ public class TabList {
     public void sendHeaderFooter(Player player) {
         Component header = MiniMessage.miniMessage().deserialize(this.tabListHeader,
                 Placeholder.unparsed("_server_id_", SysteraPlugin.getServerId()),
-                Placeholder.unparsed("_server_name_", SysteraPlugin.getServerName()));
+                Placeholder.unparsed("_server_name_", SysteraPlugin.getServerName()),
+                Placeholder.unparsed("_ping_", String.format("%d", player.getPing())));
 
         Component footer = MiniMessage.miniMessage().deserialize(this.tabListFooter,
                 Placeholder.unparsed("_server_id_", SysteraPlugin.getServerId()),
-                Placeholder.unparsed("_server_name_", SysteraPlugin.getServerName()));
+                Placeholder.unparsed("_server_name_", SysteraPlugin.getServerName()),
+                Placeholder.unparsed("_ping_", String.format("%d", player.getPing())));
 
         player.sendPlayerListHeaderAndFooter(header, footer);
     }
