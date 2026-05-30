@@ -69,10 +69,13 @@ public class PlayerListener implements Listener {
             pd.init(event.getAddress().getHostAddress(), event.getAddress().getHostName()).get(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ERROR_INTERRUPTED);
+            return;
         } catch (ExecutionException e) {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ERROR_EXECUTION);
+            return;
         } catch (TimeoutException e) {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ERROR_TIMEOUT);
+            return;
         }
 
         if (plugin.getPlayerStore().get(player.getUniqueId()) != null) {
@@ -96,6 +99,8 @@ public class PlayerListener implements Listener {
 
         // Vanish
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+        if (sp == null || sp.getSettings() == null) return;
+
         boolean isVanish = sp.getSettings().getVanish().getValue();
 
         if (player.hasPermission(sp.getSettings().getVanish().getPermission())) {
@@ -140,6 +145,11 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         SysteraPlayer sp = plugin.getPlayerStore().get(player.getUniqueId());
+
+        if (sp == null || sp.getSettings() == null) {
+            plugin.getPlayerStore().remove(player.getUniqueId());
+            return;
+        }
 
         event.quitMessage(Component.empty());
 
