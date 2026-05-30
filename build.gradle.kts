@@ -42,11 +42,6 @@ repositories {
     }
 
     maven {
-        name = "dmulloy2"
-        url = uri("https://repo.dmulloy2.net/repository/public/")
-    }
-
-    maven {
         name = "startail-public"
         url = uri("https://maven.pkg.github.com/synchthia/pkg-startail-public")
     }
