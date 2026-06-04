@@ -42,11 +42,6 @@ repositories {
     }
 
     maven {
-        name = "dmulloy2"
-        url = uri("https://repo.dmulloy2.net/repository/public/")
-    }
-
-    maven {
         name = "startail-public"
         url = uri("https://maven.pkg.github.com/synchthia/pkg-startail-public")
     }
@@ -72,7 +67,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-java-util:3.21.9")
 
     // ProtocolLib
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.0.0")
+    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 
     // gRPC
     implementation("io.grpc:grpc-netty:1.64.0")
@@ -111,6 +106,8 @@ tasks {
         reloc("org.apache.commons")
         reloc("com.google.protobuf")
         reloc("org.apache.commons.pool2")
+        reloc("io.grpc")
+        reloc("io.netty")
     }
 
     reobfJar {
